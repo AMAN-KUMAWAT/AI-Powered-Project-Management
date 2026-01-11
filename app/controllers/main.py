@@ -124,6 +124,69 @@ async def resource_planning(request: Request, db: Session = Depends(get_db)):
         "notice_data": notice_data
     })
 
+@app.get("/team-dashboard", response_class=HTMLResponse)
+async def team_dashboard(request: Request, db: Session = Depends(get_db)):
+    user = db.query(UserProfile).first()
+    notifications = get_notifications(db)
+    employees = db.query(Employee).all()
+    # Fetch unassigned stories
+    unassigned_stories = db.query(BacklogItem).filter(BacklogItem.assigned_to == None, BacklogItem.type == "STORY").all()
+    # Fetch assigned stories grouped by employee
+    assignments = {}
+    for emp in employees:
+        assignments[emp.id] = db.query(BacklogItem).filter(BacklogItem.assigned_to == emp.id).all()
+    
+    return templates.TemplateResponse("team_dashboard.html", {
+        "request": request, 
+        "user": user, 
+        "notifications": notifications,
+        "employees": employees,
+        "unassigned_stories": unassigned_stories,
+        "assignments": assignments
+    })
+
+@app.post("/auto-assign")
+async def auto_assign(db: Session = Depends(get_db)):
+    stories = db.query(BacklogItem).filter(BacklogItem.assigned_to == None, BacklogItem.type == "STORY").all()
+    employees = db.query(Employee).filter(Employee.is_assigned == 0).all()
+    
+    if not employees or not stories:
+        return {"status": "no_work_or_resources"}
+    
+    assigned_count = 0
+    for story in stories:
+        # Simple AI heuristic: Match role and skill
+        for emp in employees:
+            if "Dev" in emp.role and "React" in emp.skills and ("UI" in story.title or "Design" in story.title):
+                story.assigned_to = emp.id
+                emp.is_assigned = 1
+                emp.assigned_task = story.title
+                assigned_count += 1
+                employees.remove(emp) # Prevent over-allocation in this simple simulation
+                break
+            elif "Dev" in emp.role and "Python" in emp.skills and ("Logic" in story.title or "API" in story.title):
+                story.assigned_to = emp.id
+                emp.is_assigned = 1
+                emp.assigned_task = story.title
+                assigned_count += 1
+                employees.remove(emp)
+                break
+    
+    db.commit()
+    return {"status": "success", "count": assigned_count}
+
+@app.get("/code-hub", response_class=HTMLResponse)
+async def code_hub(request: Request, db: Session = Depends(get_db)):
+    user = db.query(UserProfile).first()
+    notifications = get_notifications(db)
+    projects = db.query(Project).all()
+    return templates.TemplateResponse("code_hub.html", {
+        "request": request, 
+        "user": user, 
+        "notifications": notifications,
+        "projects": projects
+    })
+
 @app.get("/projects/{project_id}", response_class=HTMLResponse)
 async def project_detail(project_id: int, request: Request, db: Session = Depends(get_db)):
     project = db.query(Project).filter(Project.id == project_id).first()

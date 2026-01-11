@@ -103,9 +103,13 @@ def seed_sample_data():
         db.add(metric)
     
     # Seed Backlog
-    b1 = BacklogItem(title="Setup OAuth2", description="Implement secure login flow", status="Done", priority="High", project_id=p1.id)
-    b2 = BacklogItem(title="Design Homepage", description="Create UI mockups for mobile", status="In Progress", priority="Medium", project_id=p2.id)
-    db.add_all([b1, b2])
+    b1 = BacklogItem(title="Setup OAuth2", description="Implement secure login flow", status="Done", priority="High", project_id=p1.id, type="STORY", story_points=5)
+    b2 = BacklogItem(title="Design Homepage", description="Create UI mockups for mobile", status="In Progress", priority="Medium", project_id=p2.id, type="STORY", story_points=3)
+    b3 = BacklogItem(title="API Gateway", description="Connect microservices with Ocelot", status="To Do", priority="High", project_id=p1.id, type="STORY", story_points=8)
+    b4 = BacklogItem(title="React Dashboard UI", description="Implement main analytics view in React", status="To Do", priority="Medium", project_id=p1.id, type="STORY", story_points=5)
+    b5 = BacklogItem(title="Data Visualization", description="D3.js charts for performance metrics", status="To Do", priority="Low", project_id=p2.id, type="STORY", story_points=3)
+    b6 = BacklogItem(title="Python Logic Engine", description="Process NLP data from chatbot", status="To Do", priority="High", project_id=p3.id, type="STORY", story_points=13)
+    db.add_all([b1, b2, b3, b4, b5, b6])
     
     # Seed Default User Profile
     if not db.query(UserProfile).first():

@@ -175,6 +175,14 @@
                 <i data-lucide="user-plus" class="mr-3 w-5 h-5 group-hover:scale-110 transition-transform text-blue-400"></i>
                 Resource Planning
             </a>
+            <a href="/team-dashboard" class="sidebar-item {% if request.url.path == '/team-dashboard' %}active{% endif %} flex items-center p-3 rounded-lg text-slate-400 hover:text-white group">
+                <i data-lucide="layout-list" class="mr-3 w-5 h-5 group-hover:scale-110 transition-transform text-purple-400"></i>
+                Team Dashboard
+            </a>
+            <a href="/code-hub" class="sidebar-item {% if request.url.path == '/code-hub' %}active{% endif %} flex items-center p-3 rounded-lg text-slate-400 hover:text-white group">
+                <i data-lucide="code-2" class="mr-3 w-5 h-5 group-hover:scale-110 transition-transform text-green-400"></i>
+                AI Code Hub
+            </a>
             <a href="/team" class="sidebar-item {% if request.url.path == '/team' %}active{% endif %} flex items-center p-3 rounded-lg text-slate-400 hover:text-white">
                 <i data-lucide="users" class="mr-3 w-5 h-5"></i>
                 Team

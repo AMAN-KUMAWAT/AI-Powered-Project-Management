@@ -15,4 +15,5 @@ class BacklogItem(Base):
     story_points = Column(Integer, default=0)
     sprint_number = Column(Integer, default=1)
     editable_content = Column(JSON, nullable=True) # For custom fields/AI output
+    assigned_to = Column(Integer, ForeignKey("employees.id"), nullable=True) # NEW: Resource Assignment
     created_at = Column(DateTime, default=datetime.datetime.utcnow)

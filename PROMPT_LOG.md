@@ -213,6 +213,19 @@ Vibe: Notion x Linear x Superhuman. Git commit ready. Working at localhost:8000 
 - Tagged current state as `beta-9`.
 - **Rollback Command:** `git checkout beta-9`
 
+## Phase 31: Phase 4 Implementation - AI Agent & Code Hub
+**Status:** Completed ✅
+- **Resource AI Agent:** Implemented an "AI Auto-Assign" feature that intelligently matches unassigned stories to available employees based on role and skills (e.g., matching React stories to React Devs).
+- **Kanban-Style Team Dashboard:** Created a drag-and-drop interface for manual resource reallocation.
+- **Capacity Heatmap:** Added a visual availability heatmap for January to track team workload and hotspots.
+- **AI Code Hub:** 
+    - Dedicated tab for comprehensive code generation.
+    - Support for multiple frameworks: **React**, **Python**, **Java**, **Flutter**, and **C++**.
+    - **Monaco-Style Preview:** Code preview window with macOS-style window controls and syntax-themed background.
+    - **Project Download:** Simulated ZIP generation and download functionality for complete boilerplates.
+- **Enterprise UI Upgrade:** Added dedicated sidebar tabs for **Team Dashboard** and **AI Code Hub** with distinct icon styling.
+- **Database Persistence:** Updated `BacklogItem` model to track `assigned_to` and persisted assignments to the database.
+
 ## Phase 26: Resource Planning & Replacement Analysis
 **Status:** Completed ✅
 - **Notice Period Tracking:** Implemented logic to track employees on notice, including countdowns for days left.
