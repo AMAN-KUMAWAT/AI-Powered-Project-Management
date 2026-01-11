@@ -1,20 +1,40 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, File, Form
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from app.db import get_db
 from app.models.project import Project
 from pydantic import BaseModel
+from typing import Optional
+import io
+from pypdf import PdfReader
 
 router = APIRouter()
 
-class ProjectCreate(BaseModel):
-    name: str
-    description: str = ""
-    priority: str = "Medium"
-
 @router.post("/projects")
-async def create_project(project: ProjectCreate, db: Session = Depends(get_db)):
-    db_project = Project(name=project.name, description=project.description, priority=project.priority)
+async def create_project(
+    name: str = Form(...),
+    description: str = Form(""),
+    priority: str = Form("Medium"),
+    file: Optional[UploadFile] = File(None),
+    db: Session = Depends(get_db)
+):
+    extracted_text = ""
+    if file and file.filename.endswith('.pdf'):
+        try:
+            pdf_content = await file.read()
+            reader = PdfReader(io.BytesIO(pdf_content))
+            for page in reader.pages:
+                text = page.extract_text()
+                if text:
+                    extracted_text += text + "\n"
+            
+            # Append extracted text to description
+            if extracted_text:
+                description = f"{description}\n\n[Extracted Requirements]:\n{extracted_text}"
+        except Exception as e:
+            print(f"Error extracting PDF: {e}")
+
+    db_project = Project(name=name, description=description, priority=priority)
     db.add(db_project)
     db.commit()
     db.refresh(db_project)

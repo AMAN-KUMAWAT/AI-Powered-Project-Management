@@ -12,7 +12,7 @@ def main():
     # 1. Install dependencies
     print("Installing dependencies...")
     try:
-        run_cmd(f"{sys.executable} -m pip install fastapi uvicorn sqlalchemy pydantic jinja2 python-multipart")
+        run_cmd(f"{sys.executable} -m pip install fastapi uvicorn sqlalchemy pydantic jinja2 python-multipart pypdf")
     except Exception as e:
         print(f"Error installing dependencies: {e}")
 

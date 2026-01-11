@@ -54,7 +54,16 @@
             <span class="text-xs font-semibold px-2 py-1 rounded bg-white/10 text-slate-300">{{ p.priority }}</span>
         </div>
         <h4 class="text-lg font-bold mb-2">{{ p.name }}</h4>
-        <p class="text-slate-400 text-sm mb-4 line-clamp-2">{{ p.description or 'No description provided.' }}</p>
+        <div class="relative">
+            <div id="desc-{{ p.id }}" class="text-slate-400 text-sm mb-4 overflow-hidden transition-all duration-300 max-h-20">
+                {{ p.description or 'No description provided.' }}
+            </div>
+            {% if p.description and p.description|length > 150 %}
+            <button onclick="event.stopPropagation(); toggleDesc('{{ p.id }}')" id="btn-{{ p.id }}" class="text-blue-400 hover:text-blue-300 text-xs font-bold mb-4 focus:outline-none">
+                See More
+            </button>
+            {% endif %}
+        </div>
         
         {% if p.backlog_json %}
         <div class="mb-4 flex items-center space-x-4 text-[10px] text-slate-500 bg-white/5 p-2 rounded-lg">
@@ -100,6 +109,18 @@
                 <textarea id="p-desc" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 h-24 outline-none focus:border-blue-500"></textarea>
             </div>
             <div>
+                <label class="block text-sm font-medium mb-1">Upload Project PDF (Optional)</label>
+                <div class="relative w-full">
+                    <input type="file" id="p-file" accept=".pdf" class="hidden" onchange="updateFileName(this)">
+                    <label for="p-file" class="flex items-center justify-center w-full bg-white/5 border border-dashed border-white/20 rounded-lg p-4 cursor-pointer hover:bg-white/10 transition-all">
+                        <div class="text-center">
+                            <i data-lucide="file-text" class="mx-auto w-6 h-6 mb-2 text-blue-400"></i>
+                            <span id="file-name" class="text-xs text-slate-400">Click to upload PDF requirement document</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            <div>
                 <label class="block text-sm font-medium mb-1">Priority</label>
                 <select id="p-priority" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 outline-none focus:border-blue-500">
                     <option value="Low">Low</option>
@@ -123,6 +144,27 @@
 
     function closeModal() {
         document.getElementById('projectModal').classList.add('hidden');
+        document.getElementById('file-name').textContent = "Click to upload PDF requirement document";
+        document.getElementById('projectForm').reset();
+    }
+
+    function toggleDesc(id) {
+        const desc = document.getElementById('desc-' + id);
+        const btn = document.getElementById('btn-' + id);
+        if (desc.style.maxHeight === 'none' || desc.classList.contains('max-h-full')) {
+            desc.style.maxHeight = '5rem'; // roughly 20 in tailwind
+            desc.classList.remove('max-h-full');
+            btn.textContent = 'See More';
+        } else {
+            desc.style.maxHeight = 'none';
+            desc.classList.add('max-h-full');
+            btn.textContent = 'See Less';
+        }
+    }
+
+    function updateFileName(input) {
+        const fileName = input.files[0] ? input.files[0].name : "Click to upload PDF requirement document";
+        document.getElementById('file-name').textContent = fileName;
     }
 
     async function deleteProject(id) {
@@ -139,11 +181,19 @@
         const name = document.getElementById('p-name').value;
         const description = document.getElementById('p-desc').value;
         const priority = document.getElementById('p-priority').value;
+        const fileInput = document.getElementById('p-file');
+
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('description', description);
+        formData.append('priority', priority);
+        if (fileInput.files[0]) {
+            formData.append('file', fileInput.files[0]);
+        }
 
         const res = await fetch('/projects', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, description, priority })
+            body: formData
         });
 
         if (res.ok) {

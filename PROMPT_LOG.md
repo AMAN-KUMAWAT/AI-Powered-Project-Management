@@ -116,6 +116,13 @@ Vibe: Notion x Linear x Superhuman. Git commit ready. Working at localhost:8000 
     - The **"RUN CODE"** feature now simulates native compilation for Java/Python and re-renders the OS simulation.
 - Improved the **UI dropdown visibility** and expanded framework templates.
 
+## Phase 18: Full PDF Extraction & UI Abstraction
+**Status:** Completed ✅
+- Integrated `pypdf` for complete text extraction from uploaded documentation.
+- Implemented "See More / See Less" toggles for long descriptions across Dashboard, Projects List, and Project Details.
+- Enhanced new project modals with professional PDF upload zones.
+- Optimized UI to handle large enterprise-level requirement documents while maintaining a clean aesthetic.
+
 ## Phase 11: Enhanced Language Selection UI
 **Status:** Completed ✅
 - Improved the styling of programming language dropdowns across the app.

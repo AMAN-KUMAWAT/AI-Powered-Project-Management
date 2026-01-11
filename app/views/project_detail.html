@@ -11,7 +11,16 @@
             <span class="text-slate-200">{{ project.name }}</span>
         </nav>
         <h2 class="text-3xl font-bold mb-2">{{ project.name }}</h2>
-        <p class="text-slate-400">{{ project.description }}</p>
+        <div class="relative">
+            <div id="project-desc" class="text-slate-400 overflow-hidden transition-all duration-300 max-h-24 leading-relaxed">
+                {{ project.description }}
+            </div>
+            {% if project.description and project.description|length > 200 %}
+            <button onclick="toggleProjectDesc()" id="project-desc-btn" class="text-blue-400 hover:text-blue-300 text-sm font-bold mt-2 focus:outline-none">
+                See More
+            </button>
+            {% endif %}
+        </div>
     </div>
     <div class="flex space-x-3">
         <button onclick="generateBacklog()" id="genBtn" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center shadow-lg shadow-purple-500/20 transition-all">
@@ -125,6 +134,18 @@
 
 {% block extra_js %}
 <script>
+    function toggleProjectDesc() {
+        const desc = document.getElementById('project-desc');
+        const btn = document.getElementById('project-desc-btn');
+        if (desc.style.maxHeight === 'none') {
+            desc.style.maxHeight = '6rem'; // roughly 24 in tailwind
+            btn.textContent = 'See More';
+        } else {
+            desc.style.maxHeight = 'none';
+            btn.textContent = 'See Less';
+        }
+    }
+
     async function generateBacklog() {
         const modal = document.getElementById('aiModal');
         const bar = document.getElementById('progress-bar');
