@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Project Details: {{ project.name }}{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex justify-between items-start">
+    <div>
+        <nav class="flex text-sm text-slate-400 mb-2">
+            <a href="/dashboard" class="hover:text-white">Dashboard</a>
+            <span class="mx-2">/</span>
+            <span class="text-slate-200">{{ project.name }}</span>
+        </nav>
+        <h2 class="text-3xl font-bold mb-2">{{ project.name }}</h2>
+        <p class="text-slate-400">{{ project.description }}</p>
+    </div>
+    <div class="flex space-x-3">
+        <button onclick="generateBacklog()" id="genBtn" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center shadow-lg shadow-purple-500/20 transition-all">
+            <i data-lucide="sparkles" class="mr-2 w-5 h-5"></i>
+            GENERATE BACKLOG
+        </button>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Project Stats -->
+    <div class="lg:col-span-2 space-y-6">
+        <div class="glass p-6">
+            <h3 class="text-xl font-bold mb-4 flex items-center">
+                <i data-lucide="list-checks" class="mr-2 w-5 h-5 text-blue-400"></i>
+                Backlog Preview
+            </h3>
+            <div id="backlog-preview" class="space-y-4">
+                {% if project.backlog_json %}
+                    {% for epic in project.backlog_json.epics %}
+                    <div class="p-4 bg-white/5 rounded-lg border border-white/10">
+                        <h4 class="font-bold text-blue-400 mb-2">{{ epic.title }}</h4>
+                        <div class="space-y-2">
+                            {% for story in epic.stories %}
+                            <div class="flex justify-between items-center text-sm p-2 bg-white/5 rounded">
+                                <span class="text-slate-300">{{ story.title }}</span>
+                                <span class="bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded text-xs">{{ story.points }} pts</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-12 text-slate-500 border-2 border-dashed border-white/10 rounded-xl">
+                        <i data-lucide="layout-list" class="mx-auto w-12 h-12 mb-4 opacity-20"></i>
+                        <p>No backlog generated yet. Click 'Generate Backlog' to start.</p>
+                    </div>
+                {% endif %}
+            </div>
+            {% if project.backlog_json %}
+            <div class="mt-6 text-center">
+                <a href="/projects/{{ project.id }}/backlog-editor" class="text-blue-400 hover:text-blue-300 font-medium flex items-center justify-center">
+                    Open Full Editor <i data-lucide="external-link" class="ml-2 w-4 h-4"></i>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Sidebar Info -->
+    <div class="space-y-6">
+        <div class="glass p-6">
+            <h3 class="text-lg font-bold mb-4">Details</h3>
+            <div class="space-y-4 text-sm">
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Status</span>
+                    <span class="text-green-400">{{ project.status }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Priority</span>
+                    <span class="px-2 py-0.5 bg-white/10 rounded text-xs">{{ project.priority }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Created</span>
+                    <span class="text-slate-300">{{ project.created_at.strftime('%Y-%m-%d') }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AI Modal -->
+<div id="aiModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden flex items-center justify-center z-50">
+    <div class="w-full max-w-lg p-1 text-center">
+        <div class="animate-pulse mb-8">
+            <div class="w-24 h-24 bg-purple-600 rounded-full mx-auto flex items-center justify-center shadow-2xl shadow-purple-500/50">
+                <i data-lucide="sparkles" class="text-white w-12 h-12"></i>
+            </div>
+        </div>
+        <h3 class="text-3xl font-bold mb-2">Generating AI Backlog</h3>
+        <p class="text-slate-400 text-lg">Decomposing requirements into Epics and Stories...</p>
+        
+        <div class="mt-12 w-full bg-white/10 h-1 rounded-full overflow-hidden">
+            <div class="bg-purple-500 h-full w-0" id="progress-bar" style="transition: width 2s ease"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function generateBacklog() {
+        const modal = document.getElementById('aiModal');
+        const bar = document.getElementById('progress-bar');
+        
+        modal.classList.remove('hidden');
+        setTimeout(() => bar.style.width = '100%', 100);
+
+        try {
+            const res = await fetch(`/projects/{{ project.id }}/generate-backlog`, { method: 'POST' });
+            if (res.ok) {
+                // Wait a bit for the effect
+                setTimeout(() => {
+                    window.location.href = `/projects/{{ project.id }}/backlog-editor`;
+                }, 2000);
+            } else {
+                alert('Generation failed');
+                modal.classList.add('hidden');
+            }
+        } catch (e) {
+            alert('Error calling AI');
+            modal.classList.add('hidden');
+        }
+    }
+</script>
+{% endblock %}

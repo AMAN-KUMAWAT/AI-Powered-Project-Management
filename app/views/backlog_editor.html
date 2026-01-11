@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Backlog Editor: {{ project.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .story-card:focus-within {
+        border-color: rgba(59, 130, 246, 0.5);
+        background: rgba(255, 255, 255, 0.05);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<header class="flex justify-between items-center mb-8">
+    <div>
+        <nav class="flex text-sm text-slate-400 mb-2">
+            <a href="/dashboard" class="hover:text-white">Dashboard</a>
+            <span class="mx-2">/</span>
+            <a href="/projects/{{ project.id }}" class="hover:text-white">{{ project.name }}</a>
+            <span class="mx-2">/</span>
+            <span class="text-slate-200">Backlog Editor</span>
+        </nav>
+        <h2 class="text-3xl font-bold">AI Backlog Editor</h2>
+    </div>
+    <button onclick="savePlan()" id="saveBtn" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg flex items-center shadow-lg shadow-green-500/20 transition-all">
+        <i data-lucide="save" class="mr-2 w-5 h-5"></i>
+        SAVE PLAN
+    </button>
+</header>
+
+<div id="editor-container" class="space-y-8">
+    <!-- Will be populated by JS -->
+    <div class="flex items-center justify-center py-20">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let backlogData = null;
+
+    async function loadData() {
+        const res = await fetch(`/projects/{{ project.id }}/backlog-data`);
+        backlogData = await res.json();
+        renderEditor();
+    }
+
+    function renderEditor() {
+        const container = document.getElementById('editor-container');
+        if (!backlogData.epics || backlogData.epics.length === 0) {
+            container.innerHTML = '<div class="glass p-12 text-center text-slate-500">No data found</div>';
+            return;
+        }
+
+        container.innerHTML = backlogData.epics.map((epic, eIdx) => `
+            <div class="glass p-6">
+                <div class="flex items-center mb-6 border-b border-white/10 pb-4">
+                    <div class="p-2 bg-blue-500/20 rounded mr-4">
+                        <i data-lucide="zap" class="text-blue-400 w-5 h-5"></i>
+                    </div>
+                    <input type="text" value="${epic.title}" 
+                        onchange="updateEpic(${eIdx}, this.value)"
+                        class="bg-transparent text-xl font-bold outline-none border-b border-transparent focus:border-blue-500/50 w-full">
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    ${epic.stories.map((story, sIdx) => `
+                        <div class="story-card glass p-4 border border-white/5 transition-all">
+                            <div class="flex justify-between items-start mb-3">
+                                <span class="text-xs font-bold text-slate-500 uppercase">Story</span>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xs text-slate-400">Points:</span>
+                                    <select onchange="updateStory(${eIdx}, ${sIdx}, 'points', this.value)"
+                                        class="bg-white/5 border border-white/10 rounded text-xs p-1 outline-none">
+                                        ${[1, 2, 3, 5, 8, 13, 21].map(p => `
+                                            <option value="${p}" ${p == story.points ? 'selected' : ''}>${p}</option>
+                                        `).join('')}
+                                    </select>
+                                </div>
+                            </div>
+                            <textarea onchange="updateStory(${eIdx}, ${sIdx}, 'title', this.value)"
+                                class="bg-transparent w-full resize-none outline-none text-slate-200 mb-2 h-12">${story.title}</textarea>
+                            <div class="flex items-center justify-between mt-2 pt-2 border-t border-white/5">
+                                <span class="text-[10px] text-slate-500">Sprint ${story.sprint}</span>
+                                <button class="text-slate-600 hover:text-red-400 transition-colors">
+                                    <i data-lucide="trash-2" class="w-3 h-3"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `).join('');
+        lucide.createIcons();
+    }
+
+    function updateEpic(eIdx, val) {
+        backlogData.epics[eIdx].title = val;
+    }
+
+    function updateStory(eIdx, sIdx, key, val) {
+        backlogData.epics[eIdx].stories[sIdx][key] = (key === 'points') ? parseInt(val) : val;
+    }
+
+    async function savePlan() {
+        const btn = document.getElementById('saveBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i data-lucide="loader" class="animate-spin mr-2 w-5 h-5"></i> SAVING...';
+        lucide.createIcons();
+
+        try {
+            const res = await fetch(`/projects/{{ project.id }}/backlog/save-plan`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(backlogData)
+            });
+
+            if (res.ok) {
+                window.location.href = `/projects/{{ project.id }}`;
+            } else {
+                alert('Save failed');
+            }
+        } catch (e) {
+            alert('Error saving plan');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="save" class="mr-2 w-5 h-5"></i> SAVE PLAN';
+            lucide.createIcons();
+        }
+    }
+
+    loadData();
+</script>
+{% endblock %}

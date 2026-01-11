@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}User Profile{% endblock %}
+
+{% block content %}
+<header class="mb-8">
+    <h2 class="text-3xl font-bold">User Profile</h2>
+    <p class="text-slate-400">Manage your account settings and preferences.</p>
+</header>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Profile Info Card -->
+    <div class="lg:col-span-1 space-y-6">
+        <div class="glass p-8 text-center">
+            <div class="relative inline-block mb-6">
+                <div class="w-32 h-32 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-4xl font-bold overflow-hidden border-4 border-white/10" id="avatar-preview">
+                    {% if user.avatar_url %}
+                        <img src="{{ user.avatar_url }}" alt="Avatar" class="w-full h-full object-cover">
+                    {% else %}
+                        {{ user.name[:2].upper() }}
+                    {% endif %}
+                </div>
+                <label for="avatar-input" class="absolute bottom-0 right-0 p-2 bg-blue-600 rounded-full cursor-pointer hover:bg-blue-700 transition-colors shadow-lg">
+                    <i data-lucide="camera" class="w-4 h-4 text-white"></i>
+                </label>
+                <input type="file" id="avatar-input" class="hidden" accept="image/*" onchange="uploadAvatar(this)">
+            </div>
+            <h3 class="text-xl font-bold mb-1">{{ user.name }}</h3>
+            <p class="text-slate-400 text-sm mb-4">{{ user.email }}</p>
+            <div class="px-4 py-2 bg-white/5 rounded-full text-xs font-semibold inline-block text-blue-400">
+                PRO PLAN
+            </div>
+        </div>
+
+        <div class="glass p-6">
+            <h4 class="font-bold mb-4">Appearance Settings</h4>
+            <div class="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10">
+                <div class="flex items-center">
+                    <i data-lucide="moon" class="w-5 h-5 mr-3 text-blue-400"></i>
+                    <span>Dark Mode</span>
+                </div>
+                <button onclick="toggleTheme()" class="w-12 h-6 rounded-full bg-blue-600 relative transition-colors focus:outline-none" id="theme-toggle">
+                    <div class="absolute w-4 h-4 bg-white rounded-full top-1 left-1 transition-transform transform" id="toggle-dot"></div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Form -->
+    <div class="lg:col-span-2">
+        <div class="glass p-8">
+            <h4 class="text-xl font-bold mb-6">Account Details</h4>
+            <form id="profileForm" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Full Name</label>
+                        <input type="text" name="name" value="{{ user.name }}" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Email Address</label>
+                        <input type="email" name="email" value="{{ user.email }}" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 outline-none focus:border-blue-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Bio / Description</label>
+                    <textarea name="bio" rows="4" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 outline-none focus:border-blue-500">{{ user.bio }}</textarea>
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-bold shadow-lg shadow-blue-500/20 transition-all">
+                        Update Profile
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize Toggle State
+    const currentTheme = document.documentElement.classList.contains('light') ? 'light' : 'dark';
+    updateToggleUI(currentTheme);
+
+    function updateToggleUI(theme) {
+        const dot = document.getElementById('toggle-dot');
+        const bg = document.getElementById('theme-toggle');
+        if (theme === 'light') {
+            dot.style.transform = 'translateX(24px)';
+            bg.classList.remove('bg-blue-600');
+            bg.classList.add('bg-slate-400');
+        } else {
+            dot.style.transform = 'translateX(0)';
+            bg.classList.remove('bg-slate-400');
+            bg.classList.add('bg-blue-600');
+        }
+    }
+
+    async function toggleTheme() {
+        const currentTheme = document.documentElement.classList.contains('light') ? 'light' : 'dark';
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        
+        const res = await fetch(`/profile/theme?theme=${newTheme}`, { method: 'POST' });
+        if (res.ok) {
+            document.documentElement.classList.remove('light', 'dark');
+            document.documentElement.classList.add(newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateToggleUI(newTheme);
+            lucide.createIcons();
+        }
+    }
+
+    async function uploadAvatar(input) {
+        if (input.files && input.files[0]) {
+            const formData = new FormData();
+            formData.append('file', input.files[0]);
+
+            const res = await fetch('/profile/avatar', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                document.getElementById('avatar-preview').innerHTML = `<img src="${data.avatar_url}" class="w-full h-full object-cover">`;
+                // Also update sidebar avatar if exists
+                location.reload(); 
+            }
+        }
+    }
+
+    document.getElementById('profileForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const res = await fetch('/profile/update', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (res.ok) {
+            alert('Profile updated successfully!');
+            location.reload();
+        }
+    });
+</script>
+{% endblock %}

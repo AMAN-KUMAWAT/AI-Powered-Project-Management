@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Team Overview{% endblock %}
+
+{% block content %}
+<header class="mb-8">
+    <h2 class="text-3xl font-bold">Team Overview</h2>
+    <p class="text-slate-400">Manage your high-performance delivery team.</p>
+</header>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    {% for emp in employees %}
+    <div class="glass p-6 text-center card-hover">
+        <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 mx-auto mb-4 flex items-center justify-center text-2xl font-bold">
+            {{ emp.name[:2].upper() }}
+        </div>
+        <h3 class="text-lg font-bold">{{ emp.name }}</h3>
+        <p class="text-slate-400 text-sm mb-4">{{ emp.role }}</p>
+        <div class="flex justify-center space-x-2">
+            <span class="px-2 py-1 bg-white/10 rounded text-xs text-slate-300">Score: {{ emp.performance_score }}</span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
