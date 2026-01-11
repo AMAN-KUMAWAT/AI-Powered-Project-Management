@@ -73,6 +73,15 @@ Vibe: Notion x Linear x Superhuman. Git commit ready. Working at localhost:8000 
 - Removed hover-only requirements for navigation entry points.
 - Improved button styling with subtle backgrounds for better immediate recognition.
 
+## Phase 14: Beta 3 Milestone
+**Status:** Completed ✅
+- Interactive AI UI Playground with live rendering.
+- macOS-style high-fidelity browser and code editor interfaces.
+- Permanent navigation buttons for better accessibility.
+- Expanded multi-language support (20+ languages).
+- Tagged current state as `beta-3`.
+- **Rollback Command:** `git checkout beta-3`
+
 ## Phase 10: AI UI Playground
 **Status:** Completed ✅
 - Added "GENERATE UI COMPONENT" feature to the Split View screen.
@@ -90,6 +99,22 @@ Vibe: Notion x Linear x Superhuman. Git commit ready. Working at localhost:8000 
 - Added **micro-interactions**: "Copied!" feedback on the copy button, smooth slide-in animations for the playground, and improved hover states.
 - Refined **typography and spacing** using high-fidelity monospaced fonts for code and better contrast for labels.
 - Integrated a "Live" pulsating indicator to signify the interactive environment.
+
+## Phase 15: Interactive AI UI Playground
+**Status:** Completed ✅
+- Enhanced the **UI Generator** to be language-specific (React, Vue, and Tailwind HTML support).
+- Implemented a **Live Editor**: The code pane is now a functional text area where you can edit the generated code.
+- Added a **"RUN CODE"** button that immediately renders the edited code into the browser shell preview.
+- Integrated framework-specific CDNs (React 18, Vue 3, Babel) into the generation logic to allow modern framework code to run "live" in the browser without a build step.
+
+## Phase 16: Native Language UI Simulation
+**Status:** Completed ✅
+- Upgraded the **AI UI Generator** to support non-web languages (Java Swing, Python Tkinter).
+- Implemented **"Native Window Emulation"**: When generating Java or Python UI, the preview pane renders a high-fidelity OS window mock that reflects the code's intent.
+- Enhanced the **Playground Editor**:
+    - The editor now displays the actual source code for the selected language (e.g., `public class Main extends JFrame`).
+    - The **"RUN CODE"** feature now simulates native compilation for Java/Python and re-renders the OS simulation.
+- Improved the **UI dropdown visibility** and expanded framework templates.
 
 ## Phase 11: Enhanced Language Selection UI
 **Status:** Completed ✅
