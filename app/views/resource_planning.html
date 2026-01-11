@@ -98,9 +98,16 @@
                                 <p class="text-sm text-slate-400 italic leading-relaxed">
                                     "Internal capacity is sufficient. <strong>{{ item.replacements[0].name }}</strong> shows a strong skill overlap of {{ item.replacements[0].match_score }}%. We suggest a 5-day knowledge transfer period starting immediately to ensure a smooth transition."
                                 </p>
-                                <button onclick="openHandoverModal('{{ item.employee.name }}', '{{ item.replacements[0].name }}')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all">
+                                {% if item.employee.handover_scheduled %}
+                                <div class="w-full py-2.5 bg-green-500/20 text-green-400 rounded-xl text-xs font-black uppercase tracking-widest border border-green-500/30 flex items-center justify-center">
+                                    <i data-lucide="calendar-check" class="w-4 h-4 mr-2"></i>
+                                    Meeting Scheduled
+                                </div>
+                                {% else %}
+                                <button onclick="openHandoverModal('{{ item.employee.id }}', '{{ item.employee.name }}', '{{ item.replacements[0].name }}')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all">
                                     Schedule Handover Meeting
                                 </button>
+                                {% endif %}
                             </div>
                         {% endif %}
                     </div>
@@ -132,6 +139,7 @@
         </div>
         
         <form id="handoverForm" class="space-y-4">
+            <input type="hidden" id="handoverEmpId">
             <div>
                 <label class="block text-xs font-black uppercase tracking-widest text-slate-500 mb-2">Primary Participant</label>
                 <input type="text" id="handoverFrom" readonly class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500">
@@ -152,7 +160,7 @@
             </div>
             <div>
                 <label class="block text-xs font-black uppercase tracking-widest text-slate-500 mb-2">Platform</label>
-                <select class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500">
+                <select id="handoverPlatform" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500">
                     <option value="Teams" class="bg-slate-900">Microsoft Teams</option>
                     <option value="Zoom" class="bg-slate-900">Zoom</option>
                     <option value="Meet" class="bg-slate-900">Google Meet</option>
@@ -167,7 +175,8 @@
 </div>
 
 <script>
-function openHandoverModal(from, to) {
+function openHandoverModal(empId, from, to) {
+    document.getElementById('handoverEmpId').value = empId;
     document.getElementById('handoverFrom').value = from;
     document.getElementById('handoverTo').value = to;
     const modal = document.getElementById('handoverModal');
@@ -192,25 +201,40 @@ function closeHandoverModal() {
 document.getElementById('handoverForm').onsubmit = async (e) => {
     e.preventDefault();
     const btn = e.target.querySelector('button');
+    const empId = document.getElementById('handoverEmpId').value;
+    const platform = document.getElementById('handoverPlatform').value;
     const originalText = btn.innerText;
     btn.disabled = true;
     btn.innerText = "Scheduling...";
     
-    // Simulate API Call
-    await new Promise(r => setTimeout(r, 1500));
-    
-    closeHandoverModal();
-    
-    // Show Success Toast (Simulated)
-    const toast = document.createElement('div');
-    toast.className = "fixed bottom-8 right-8 bg-green-500 text-white px-8 py-4 rounded-2xl shadow-2xl z-[100] animate-bounce font-bold flex items-center";
-    toast.innerHTML = `<i data-lucide="check-circle" class="mr-3"></i> Handover Meeting Scheduled Successfully!`;
-    document.body.appendChild(toast);
-    lucide.createIcons();
-    
-    setTimeout(() => toast.remove(), 4000);
-    btn.disabled = false;
-    btn.innerText = originalText;
+    try {
+        const response = await fetch(`/schedule-handover/${empId}`, { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ platform: platform })
+        });
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            closeHandoverModal();
+            
+            // Show Success Toast
+            const toast = document.createElement('div');
+            toast.className = "fixed bottom-8 right-8 bg-green-500 text-white px-8 py-4 rounded-2xl shadow-2xl z-[100] animate-bounce font-bold flex items-center";
+            toast.innerHTML = `<i data-lucide="check-circle" class="mr-3"></i> Meeting Scheduled! Email sent to ${result.email_sent_to}`;
+            document.body.appendChild(toast);
+            lucide.createIcons();
+            
+            setTimeout(() => {
+                toast.remove();
+                window.location.reload(); // Reload to show updated status
+            }, 2000);
+        }
+    } catch (err) {
+        console.error(err);
+        btn.disabled = false;
+        btn.innerText = originalText;
+    }
 };
 </script>
 {% endblock %}

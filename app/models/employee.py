@@ -7,6 +7,7 @@ class Employee(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
+    email = Column(String, nullable=True) # NEW: Employee Email
     role = Column(String) # Dev, QA, PM, etc.
     performance_score = Column(Float, default=0.0)
     avatar_url = Column(String, nullable=True)
@@ -19,3 +20,4 @@ class Employee(Base):
     notice_start_date = Column(DateTime, nullable=True)
     notice_end_date = Column(DateTime, nullable=True)
     skills = Column(String, default="") # Comma separated skills: "React, Python, SQL"
+    handover_scheduled = Column(Boolean, default=False) # NEW: Track handover status

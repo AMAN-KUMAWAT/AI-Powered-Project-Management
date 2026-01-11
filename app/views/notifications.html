@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}Notifications{% endblock %}
+{% block title %}Idle Resource Status{% endblock %}
 
 {% block content %}
 <header class="mb-8 flex justify-between items-center">
     <div>
-        <h2 class="text-3xl font-bold">Resource Notifications</h2>
-        <p class="text-slate-400">Alerts for idle resources and unassigned talent.</p>
+        <h2 class="text-3xl font-bold">Idle Resource Status</h2>
+        <p class="text-slate-400">Real-time insights into unassigned talent and available capacity.</p>
     </div>
     <div class="px-4 py-2 bg-blue-500/10 rounded-lg border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-widest">
         {{ idle_employees|length }} Alerts Active

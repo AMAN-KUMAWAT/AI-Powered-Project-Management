@@ -32,17 +32,102 @@ async def generate_backlog(project_id: int, db: Session = Depends(get_db)):
     ]
     
     # Pick 4-6 random epics from the list
+    # Realistic Story Mapping based on Epic Names
+    story_templates = {
+        "Core SaaS HR Platform Architecture": [
+            "Initialize multi-tenant database schema",
+            "Setup centralized logging and monitoring",
+            "Implement base repository pattern",
+            "Configure environment-specific secrets",
+            "Deploy infrastructure as code"
+        ],
+        "User Authentication & Security": [
+            "Integrate OAuth2 with Google/Microsoft",
+            "Implement multi-factor authentication",
+            "Create password reset workflow",
+            "Setup JWT token rotation",
+            "Audit log for security events"
+        ],
+        "Dashboard & Data Visualization": [
+            "Real-time analytics widget for HR",
+            "Custom report builder for managers",
+            "Interactive employee growth chart",
+            "Departmental budget heatmap",
+            "Export dashboard as PDF/CSV"
+        ],
+        "API Integration & Webhooks": [
+            "External API gateway for partners",
+            "Webhook triggers for payroll events",
+            "Integration with Slack notifications",
+            "Sync employee data with ERP",
+            "Public API documentation portal"
+        ],
+        "Performance Optimization": [
+            "Cache frequent database queries",
+            "Optimize image asset delivery",
+            "Implement database indexing",
+            "Lazy load heavy UI components",
+            "Reduce bundle size for mobile"
+        ],
+        "Mobile Responsiveness": [
+            "PWA support for offline access",
+            "Adaptive sidebar for small screens",
+            "Touch-friendly data grids",
+            "Native push notification support",
+            "Optimize mobile checkout flow"
+        ],
+        "Admin Control Panel": [
+            "Role-based access control (RBAC)",
+            "Organization settings management",
+            "Global system health monitor",
+            "Manage enterprise license keys",
+            "Bulk user import via CSV"
+        ],
+        "Third-party Service Integration": [
+            "Salesforce CRM data sync",
+            "Stripe payment gateway setup",
+            "AWS S3 bucket for uploads",
+            "SendGrid email template engine",
+            "GitHub CI/CD pipeline integration"
+        ],
+        "Ecommerce Mobile App": [
+            "Product catalog search & filters",
+            "Shopping cart persistent state",
+            "Secure checkout with Apple Pay",
+            "Order tracking real-time status",
+            "User product reviews system"
+        ],
+        "AI Customer Chatbot": [
+            "Train NLP model with FAQ data",
+            "Live chat handover to human agent",
+            "Sentiment analysis for support",
+            "Intelligent auto-reply bot",
+            "Voice-to-text input support"
+        ]
+    }
+
     selected_epics = random.sample(epic_names, random.randint(4, 6))
     
     for i, epic_name in enumerate(selected_epics):
         stories = []
-        # Generate 4-6 stories per epic
-        num_stories = random.randint(4, 6)
-        for j in range(num_stories):
+        # Get specific templates if available, otherwise use generic realistic names
+        templates = story_templates.get(epic_name, [
+            f"Implement core logic for {epic_name}",
+            f"Unit test {epic_name} modules",
+            f"Documentation for {epic_name}",
+            f"Frontend wiring for {epic_name}",
+            f"Edge case handling in {epic_name}"
+        ])
+        
+        # Pick 4-6 stories per epic
+        num_stories = random.randint(min(4, len(templates)), min(6, len(templates)))
+        chosen_stories = random.sample(templates, num_stories)
+        
+        for j, story_title in enumerate(chosen_stories):
             points = random.choice([1, 2, 3, 5, 8, 13])
             sprint = (i // 2) + 1 # Simple sprint assignment
             stories.append({
-                "title": f"As a user, I want to {epic_name.lower()} feature part {j+1}",
+                "title": story_title,
                 "points": points,
                 "sprint": sprint
             })

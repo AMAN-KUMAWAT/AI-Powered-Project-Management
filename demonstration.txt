@@ -1,0 +1,86 @@
+================================================================================
+🚀 SMART AI PM TOOL - HACKATHON DEMONSTRATION GUIDE
+================================================================================
+
+This document outlines the end-to-end flow of the Smart AI PM Tool, designed to 
+showcase the integration of AI-driven project management and resource optimization.
+
+--------------------------------------------------------------------------------
+1. THE LAUNCH (Landing Page & Auth)
+--------------------------------------------------------------------------------
+- Entry Point: The demonstration begins at the cinematic landing page.
+- Visuals: Note the "Floating Bubbles" background and Glassmorphism design.
+- Action: Toggle between "Sign In" and "Create Account".
+- Validation: Note that only real, original emails are accepted. Sample emails like "abc@gmail.com" or "test@example.com" will be blocked by the intelligent validation engine.
+- Flow: Submit a valid email to see the simulated auth transition into the Dashboard.
+
+--------------------------------------------------------------------------------
+2. PROJECT MANAGEMENT FLOW (AI Backlog & PDF Intelligence)
+--------------------------------------------------------------------------------
+- Dashboard: View active projects and "Top Performers" badges.
+- Create Project: 
+    - Click "New Project".
+    - Action: Upload a PDF requirement document.
+    - AI Insight: The system automatically extracts text from the PDF and 
+      populates the project description.
+- AI Backlog Generation:
+    - Go to a project and click "Generate Backlog".
+    - Select "Enterprise Planning" for a detailed 8-epic, 48-story structure.
+    - Result: View the generated roadmap with Epics, Stories, and Story Points.
+- Backlog Editor: Edit story points or status directly in the interactive grid.
+
+--------------------------------------------------------------------------------
+3. THE UI PLAYGROUND (AI Code Generation)
+--------------------------------------------------------------------------------
+- Split View: Click "Details" on any User Story to enter the Split View.
+- Action: Click "Generate UI Component".
+- Interaction: 
+    - Select a framework (React, Vue, or Tailwind HTML).
+    - AI Action: Watch it generate a live UI prototype based on that specific story.
+    - Live Editor: Edit the code in the "macOS-style" editor and click "RUN CODE" 
+      to update the "Browser Shell" preview instantly.
+- Native Simulation: Select "Java Swing" or "Python Tkinter" to see a high-fidelity 
+  OS window simulation of a desktop app.
+
+--------------------------------------------------------------------------------
+4. RESOURCE MANAGEMENT FLOW (AI Resource Agent)
+--------------------------------------------------------------------------------
+- Team Dashboard:
+    - View the Kanban-style assignment board.
+    - Action: Drag an "Unassigned Story" and drop it onto an employee's column.
+    - AI Agent: Click "AI Auto-Assign" to let the agent intelligently match 
+      stories to developers based on their specific skills (e.g., React vs Python).
+- Capacity Heatmap: View the January heatmap to identify team bottlenecks.
+- Idle Resource Status: 
+    - Check the "Idle Resource Status" tab.
+    - Insight: Identify employees who have been free for >24h (High Priority).
+    - Action: Click "Allocate Now" to jump straight to their assignment profile.
+
+--------------------------------------------------------------------------------
+5. STRATEGIC PLANNING & RISK (Handover & Replacements)
+--------------------------------------------------------------------------------
+- Resource Planning:
+    - View "Robert Stark" or "George Bush" who are on Notice Period.
+    - Risk Analysis: See the "Days Left" countdown (Red/Yellow alerts).
+    - Skill Matching: View the AI-suggested replacements with "% Match Scores".
+- Action: Click "Schedule Handover Meeting".
+- Flow: Select "Zoom", set a time, and confirm.
+- Integration: The system sends a simulated email to the departing employee and 
+  updates the status to "Meeting Scheduled".
+
+--------------------------------------------------------------------------------
+6. SYSTEM & PERSONALIZATION
+--------------------------------------------------------------------------------
+- Theme: Go to "Profile & Settings" and switch between "Dark Mode" and "Light Mode".
+- Updates: Change user name/email and see the UI reflect changes globally.
+- Responsive: Shrink the window to demonstrate the mobile-first sidebar collapse.
+
+================================================================================
+💡 KEY SELLING POINTS FOR JUDGES:
+================================================================================
+1. Strict MVC Architecture: Clean separation of logic, data, and presentation.
+2. PDF to Roadmap: Converting raw docs into actionable Jira-ready backlogs.
+3. Skill-Based Resource AI: No more manual allocation; let AI optimize the team.
+4. Live UI Prototyping: Instant visual feedback for project stakeholders.
+5. End-to-End Lifecycle: From landing page to ZIP download.
+================================================================================

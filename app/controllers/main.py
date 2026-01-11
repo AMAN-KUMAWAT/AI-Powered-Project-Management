@@ -8,8 +8,9 @@ from app.models.base import Base
 from app.models.project import Project
 from app.models.employee import Employee
 from app.models.performance import PerformanceMetric
+from app.models.backlog import BacklogItem
 from app.models.user import UserProfile
-from app.controllers import projects, performance, jira, backlog, user, code_gen
+from app.controllers import projects, performance, jira, backlog, user
 import os
 from datetime import datetime, timedelta
 
@@ -39,7 +40,6 @@ app.include_router(performance.router)
 app.include_router(jira.router)
 app.include_router(backlog.router)
 app.include_router(user.router)
-app.include_router(code_gen.router)
 
 @app.get("/", response_class=HTMLResponse)
 async def landing_page(request: Request):
@@ -67,7 +67,7 @@ async def notifications_view(request: Request, db: Session = Depends(get_db)):
     
     return templates.TemplateResponse("notifications.html", {
         "request": request, 
-        "user": user,
+        "user": user, 
         "idle_employees": idle_employees,
         "notifications": idle_employees
     })
@@ -119,7 +119,7 @@ async def resource_planning(request: Request, db: Session = Depends(get_db)):
     
     return templates.TemplateResponse("resource_planning.html", {
         "request": request, 
-        "user": user,
+        "user": user, 
         "notifications": notifications,
         "notice_data": notice_data
     })
@@ -174,18 +174,6 @@ async def auto_assign(db: Session = Depends(get_db)):
     
     db.commit()
     return {"status": "success", "count": assigned_count}
-
-@app.get("/code-hub", response_class=HTMLResponse)
-async def code_hub(request: Request, db: Session = Depends(get_db)):
-    user = db.query(UserProfile).first()
-    notifications = get_notifications(db)
-    projects = db.query(Project).all()
-    return templates.TemplateResponse("code_hub.html", {
-        "request": request, 
-        "user": user, 
-        "notifications": notifications,
-        "projects": projects
-    })
 
 @app.get("/projects/{project_id}", response_class=HTMLResponse)
 async def project_detail(project_id: int, request: Request, db: Session = Depends(get_db)):
@@ -312,6 +300,28 @@ async def unassign_task(employee_id: int, db: Session = Depends(get_db)):
     db.commit()
     return {"status": "success"}
 
+@app.post("/schedule-handover/{employee_id}")
+async def schedule_handover(employee_id: int, request: Request, db: Session = Depends(get_db)):
+    employee = db.query(Employee).filter(Employee.id == employee_id).first()
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    
+    # Get request body for platform simulation
+    data = await request.json()
+    platform = data.get("platform", "Teams")
+    
+    employee.handover_scheduled = True
+    db.commit()
+    
+    # Simulate Email Notification
+    print(f"--- SIMULATED EMAIL NOTIFICATION ---")
+    print(f"TO: {employee.email}")
+    print(f"SUBJECT: Handover Meeting Scheduled ({platform})")
+    print(f"BODY: Hello {employee.name}, a handover meeting has been scheduled via {platform}. Please check your calendar for details.")
+    print(f"------------------------------------")
+    
+    return {"status": "success", "email_sent_to": employee.email}
+
 @app.get("/projects-list", response_class=HTMLResponse)
 async def projects_list(request: Request, db: Session = Depends(get_db)):
     all_projects = db.query(Project).order_by(Project.created_at.desc()).all()
@@ -330,6 +340,6 @@ async def backlog_page(request: Request, db: Session = Depends(get_db)):
     notifications = get_notifications(db)
     return templates.TemplateResponse("base.html", {
         "request": request, 
-        "user": user,
+        "user": user, 
         "notifications": notifications
     })

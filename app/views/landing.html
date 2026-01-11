@@ -71,11 +71,14 @@
             </div>
 
             <form id="authForm" class="space-y-5" onsubmit="handleAuth(event)">
+                <div id="authError" class="hidden p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold text-center animate-pulse">
+                    Please use a real, original email address. Sample emails are not allowed.
+                </div>
                 <div class="space-y-2">
                     <label class="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">Email Address</label>
                     <div class="relative">
                         <i data-lucide="mail" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500"></i>
-                        <input type="email" required placeholder="name@company.com" class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all">
+                        <input type="email" id="emailInput" required placeholder="name@company.com" class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all">
                     </div>
                 </div>
                 <div class="space-y-2">
@@ -128,7 +131,31 @@
 
         function handleAuth(e) {
             e.preventDefault();
+            const email = document.getElementById('emailInput').value.toLowerCase();
+            const errorDiv = document.getElementById('authError');
             const btn = e.target.querySelector('button');
+
+            // List of forbidden sample/fake patterns
+            const forbiddenPatterns = [
+                'abc@', 'test@', 'example@', 'sample@', 'user@', 'admin@', 
+                'temp@', 'dummy@', 'fake@', 'mail@', 'demo@', 'asdf@',
+                '123@', 'aaa@', 'bbb@', 'ccc@'
+            ];
+
+            const isSampleEmail = forbiddenPatterns.some(pattern => email.startsWith(pattern)) || 
+                                email.includes('example.com') || 
+                                email.includes('test.com') ||
+                                email === 'abc@gmail.com';
+
+            if (isSampleEmail) {
+                errorDiv.classList.remove('hidden');
+                document.getElementById('emailInput').classList.add('border-red-500');
+                return;
+            }
+
+            errorDiv.classList.add('hidden');
+            document.getElementById('emailInput').classList.remove('border-red-500');
+            
             btn.innerText = isLogin ? "Signing in..." : "Creating account...";
             btn.disabled = true;
 

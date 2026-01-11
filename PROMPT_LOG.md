@@ -194,6 +194,14 @@ Vibe: Notion x Linear x Superhuman. Git commit ready. Working at localhost:8000 
 - **Calendar Integration Simulation:** Added a form to capture date, time, and platform (Teams/Zoom/Meet) for the transfer.
 - **Success Feedback:** Integrated a real-time toast notification system to confirm calendar invitations have been sent.
 - **Improved UX:** Added smooth transitions and animations for the scheduling flow.
+- **Handover Status Persistence:** Enhanced the scheduling logic to persist the "Meeting Scheduled" state in the database, ensuring the button updates permanently after a handover is confirmed.
+
+## Phase 32: UI Reorganization & Resource Alerts
+**Status:** Completed ✅
+- **Sidebar Categorization:** Divided the sidebar into two main logical sections: **Project Management** and **Resource Management**.
+- **Interactive Toggles:** Implemented a clickable expansion system for sidebar categories with smooth chevron rotations.
+- **Resource Tab Relocation:** Renamed the "Notifications" tab to **"Idle Resource Status"** and moved it into the **Resource Management** section to better align with its purpose of tracking free talent.
+- **Visual Consistency:** Updated icons and page headers to reflect the new "Idle Resource Status" branding.
 
 ## Phase 29: Intelligent Landing Page & Auth Flow
 **Status:** Completed ✅
@@ -202,6 +210,9 @@ Vibe: Notion x Linear x Superhuman. Git commit ready. Working at localhost:8000 
 - **Branding & Stats:** Added value-proposition badges and key performance indicators to the landing experience.
 - **Secure Redirection:** Designed a seamless transition from the auth forms to the main Dashboard.
 - **Visual Consistency:** Reused the floating bubble engine and glassmorphism styling for a unified app feel.
+- **Strict Email Validation:** Implemented a verification engine on the landing page that blocks common sample/fake emails (e.g., abc@gmail.com, test@example.com), ensuring only original user emails are allowed for sign-in/up.
+- **Seeded Data Alignment:** Updated the default system user's email to `aman.pm@smartai.io` to comply with the new strict validation rules.
+- **Realistic Story Naming:** Implemented a context-aware story generation engine that replaces generic placeholders with engineering-grade titles like "Integrate OAuth2" or "Optimize database indexing".
 
 ## Phase 30: Beta 9 Milestone
 **Status:** Completed ✅
