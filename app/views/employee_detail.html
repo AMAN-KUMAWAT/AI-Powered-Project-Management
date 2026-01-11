@@ -24,6 +24,9 @@
                     Promotion Ready
                 </span>
                 {% endif %}
+                <span id="status-badge" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider {% if employee.is_assigned %}bg-yellow-500/20 text-yellow-400{% else %}bg-green-500/20 text-green-400{% endif %}">
+                    {{ 'Assigned' if employee.is_assigned else 'Free' }}
+                </span>
             </div>
         </div>
     </div>
@@ -83,6 +86,52 @@
 
     <!-- Sidebar Info -->
     <div class="space-y-6">
+        <!-- Resource Allocation Section -->
+        <div class="glass p-6 border-l-4 {% if employee.is_assigned %}border-yellow-500{% else %}border-green-500{% endif %}">
+            <h3 class="text-lg font-bold mb-4 flex items-center">
+                <i data-lucide="user-plus" class="w-5 h-5 mr-3 text-blue-400"></i>
+                Resource Allocation
+            </h3>
+            <div id="allocation-content">
+                {% if employee.is_assigned %}
+                <div class="p-4 bg-white/5 rounded-xl border border-white/10 mb-4">
+                    <p class="text-xs text-slate-500 uppercase font-bold mb-1">Current Assignment</p>
+                    <p class="text-sm font-medium text-white">{{ employee.assigned_task }}</p>
+                </div>
+                <button onclick="unassignTask()" class="w-full py-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-xl font-bold text-sm transition-all flex items-center justify-center">
+                    <i data-lucide="user-minus" class="w-4 h-4 mr-2"></i>
+                    Release Resource
+                </button>
+                {% else %}
+                <div class="space-y-4">
+                    <p class="text-sm text-slate-400 mb-4 italic text-center">Resource is currently free. Select a task to allocate.</p>
+                    
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Select Project</label>
+                        <select id="project-select" onchange="updateTaskList()" class="w-full bg-slate-800 text-white border border-white/10 rounded-lg p-2.5 outline-none focus:border-blue-500 text-sm cursor-pointer">
+                            <option value="" class="text-black bg-white">-- Select Project --</option>
+                            {% for p in projects %}
+                            <option value="{{ p.id }}" data-backlog='{{ p.backlog_json|tojson if p.backlog_json else "{}" }}' class="text-black bg-white">{{ p.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div id="task-list-container" class="hidden">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Select Task (Epic/Story)</label>
+                        <select id="task-select" class="w-full bg-slate-800 text-white border border-white/10 rounded-lg p-2.5 outline-none focus:border-blue-500 text-sm cursor-pointer">
+                            <!-- Tasks will be populated here -->
+                        </select>
+                    </div>
+
+                    <button onclick="assignTask()" id="assignBtn" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center mt-4">
+                        <i data-lucide="plus-circle" class="w-4 h-4 mr-2"></i>
+                        Allocate Resource
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
         <div class="glass p-6">
             <h3 class="text-lg font-bold mb-4">Contact Information</h3>
             <div class="space-y-4 text-sm">
@@ -107,5 +156,101 @@
             </div>
         </div>
     </div>
-</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function updateTaskList() {
+        const projectSelect = document.getElementById('project-select');
+        const taskSelect = document.getElementById('task-select');
+        const container = document.getElementById('task-list-container');
+        
+        const selectedOption = projectSelect.options[projectSelect.selectedIndex];
+        if (!selectedOption.value) {
+            container.classList.add('hidden');
+            return;
+        }
+
+        const backlog = JSON.parse(selectedOption.getAttribute('data-backlog'));
+        taskSelect.innerHTML = '<option value="" class="text-black bg-white">-- Select Task --</option>';
+
+        if (backlog.epics) {
+            backlog.epics.forEach(epic => {
+                // Add Epic as an option
+                const epicOpt = document.createElement('option');
+                epicOpt.value = `Epic: ${epic.title}`;
+                epicOpt.className = "text-black bg-white font-bold";
+                epicOpt.textContent = `[EPIC] ${epic.title}`;
+                taskSelect.appendChild(epicOpt);
+
+                // Add Stories as options
+                if (epic.stories) {
+                    epic.stories.forEach(story => {
+                        const storyOpt = document.createElement('option');
+                        storyOpt.value = `Story: ${story.title}`;
+                        storyOpt.className = "text-black bg-white ml-4";
+                        storyOpt.textContent = `└─ [STORY] ${story.title}`;
+                        taskSelect.appendChild(storyOpt);
+                    });
+                }
+            });
+        } else {
+            const opt = document.createElement('option');
+            opt.textContent = "No tasks generated for this project";
+            opt.disabled = true;
+            taskSelect.appendChild(opt);
+        }
+
+        container.classList.remove('hidden');
+    }
+
+    async function assignTask() {
+        const taskName = document.getElementById('task-select').value;
+        const btn = document.getElementById('assignBtn');
+        if (!taskName) {
+            alert('Please select a task to allocate.');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i data-lucide="loader" class="animate-spin w-4 h-4 mr-2"></i> ALLOCATING...';
+        lucide.createIcons();
+
+        try {
+            const res = await fetch(`/team/{{ employee.id }}/assign-task`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ task_name: taskName })
+            });
+
+            if (res.ok) {
+                location.reload();
+            } else {
+                alert('Allocation failed');
+            }
+        } catch (e) {
+            alert('Error calling server');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="plus-circle" class="w-4 h-4 mr-2"></i> Allocate Resource';
+            lucide.createIcons();
+        }
+    }
+
+    async function unassignTask() {
+        if (!confirm('Are you sure you want to release this resource?')) return;
+
+        try {
+            const res = await fetch(`/team/{{ employee.id }}/unassign-task`, {
+                method: 'POST'
+            });
+
+            if (res.ok) {
+                location.reload();
+            }
+        } catch (e) {
+            alert('Error calling server');
+        }
+    }
+</script>
 {% endblock %}

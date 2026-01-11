@@ -109,12 +109,37 @@ async def employee_detail(employee_id: int, request: Request, db: Session = Depe
         raise HTTPException(status_code=404, detail="Employee not found")
     metric = db.query(PerformanceMetric).filter(PerformanceMetric.employee_id == employee_id).first()
     user = db.query(UserProfile).first()
+    all_projects = db.query(Project).all()
     return templates.TemplateResponse("employee_detail.html", {
         "request": request, 
         "employee": employee, 
-        "metric": metric,
-        "user": user
+        "metric": metric, 
+        "user": user,
+        "projects": all_projects
     })
+
+@app.post("/team/{employee_id}/assign-task")
+async def assign_task(employee_id: int, data: dict, db: Session = Depends(get_db)):
+    employee = db.query(Employee).filter(Employee.id == employee_id).first()
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    
+    task_name = data.get("task_name")
+    employee.is_assigned = 1
+    employee.assigned_task = task_name
+    db.commit()
+    return {"status": "success", "task": task_name}
+
+@app.post("/team/{employee_id}/unassign-task")
+async def unassign_task(employee_id: int, db: Session = Depends(get_db)):
+    employee = db.query(Employee).filter(Employee.id == employee_id).first()
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    
+    employee.is_assigned = 0
+    employee.assigned_task = None
+    db.commit()
+    return {"status": "success"}
 
 @app.get("/projects-list", response_class=HTMLResponse)
 async def projects_list(request: Request, db: Session = Depends(get_db)):

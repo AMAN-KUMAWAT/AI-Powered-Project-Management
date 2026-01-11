@@ -9,3 +9,5 @@ class Employee(Base):
     role = Column(String) # Dev, QA, PM, etc.
     performance_score = Column(Float, default=0.0)
     avatar_url = Column(String, nullable=True)
+    is_assigned = Column(Integer, default=0) # 0 for Free, 1 for Assigned
+    assigned_task = Column(String, nullable=True) # Description of task

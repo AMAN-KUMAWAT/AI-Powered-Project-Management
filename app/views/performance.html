@@ -16,6 +16,7 @@
                 <th class="p-4 font-semibold">Role</th>
                 <th class="p-4 font-semibold">Score</th>
                 <th class="p-4 font-semibold">Velocity</th>
+                <th class="p-4 font-semibold">Status</th>
                 <th class="p-4 font-semibold">Promotion Ready</th>
                 <th class="p-4 font-semibold">Actions</th>
             </tr>
@@ -37,6 +38,11 @@
                     </span>
                 </td>
                 <td class="p-4 text-slate-400">{{ m.velocity if m else 'N/A' }} pts/sp</td>
+                <td class="p-4">
+                    <span class="px-2 py-1 rounded text-[10px] font-bold uppercase {% if emp.is_assigned %}bg-yellow-500/20 text-yellow-400{% else %}bg-green-500/20 text-green-400{% endif %}">
+                        {{ 'Assigned' if emp.is_assigned else 'Free' }}
+                    </span>
+                </td>
                 <td class="p-4">
                     {% if m and m.promotion_ready == 'Yes' %}
                     <span class="text-green-400 flex items-center"><i data-lucide="trending-up" class="w-4 h-4 mr-1"></i> Ready</span>

@@ -144,6 +144,22 @@ Vibe: Notion x Linear x Superhuman. Git commit ready. Working at localhost:8000 
 - Enhanced generated UI prototypes (React, Java, Python, HTML) to prominently feature and reflect the specific story details.
 - Improved the visual fidelity of the generated "Requirement Context" section in the UI Playground.
 
+## Phase 22: Beta 6 Milestone
+**Status:** Completed ✅
+- Story-Driven UI Generation: Refactored the engine to prioritize user story descriptions.
+- Backlog Data Visibility Fix: Restored Story and Point counts in the Projects tab.
+- High-fidelity UI prototypes for React, Java, Python, and HTML.
+- Tagged current state as `beta-6`.
+- **Rollback Command:** `git checkout beta-6`
+
+## Phase 23: Resource Allocation & Management
+**Status:** Completed ✅
+- Enhanced the **Employee Model** with `is_assigned` and `assigned_task` properties.
+- Implemented a **Resource Allocation UI** in the Employee Detail view.
+- Added dynamic task fetching: Managers can now select a project and allocate specific **Epics** or **User Stories** to a free resource.
+- Integrated assignment status (Free/Assigned) across the **Team Overview** and **Performance Matrix**.
+- Implemented "Release Resource" functionality to return employees to the free pool.
+
 ## Phase 11: Enhanced Language Selection UI
 **Status:** Completed ✅
 - Improved the styling of programming language dropdowns across the app.
