@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart AI PM | Intelligent Project Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: white; overflow-x: hidden; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .gradient-text { background: linear-gradient(90deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .bubbles-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; overflow: hidden; pointer-events: none; }
+        .bubble { position: absolute; bottom: -100px; background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 50%; animation: float-up 15s infinite linear; }
+        @keyframes float-up { 0% { transform: translateY(0) scale(1); opacity: 0; } 10% { opacity: 0.5; } 90% { opacity: 0.5; } 100% { transform: translateY(-120vh) scale(1.2); opacity: 0; } }
+        
+        .hero-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 600px; background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%); z-index: -1; filter: blur(60px); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center">
+    <!-- Background -->
+    <div class="bubbles-container">
+        <div class="bubble" style="left: 10%; width: 40px; height: 40px; animation-delay: 0s; animation-duration: 18s;"></div>
+        <div class="bubble" style="left: 25%; width: 50px; height: 50px; animation-delay: 2s; animation-duration: 15s;"></div>
+        <div class="bubble" style="left: 40%; width: 35px; height: 35px; animation-delay: 4s; animation-duration: 20s;"></div>
+        <div class="bubble" style="left: 70%; width: 45px; height: 45px; animation-delay: 5s; animation-duration: 14s;"></div>
+        <div class="bubble" style="left: 85%; width: 30px; height: 30px; animation-delay: 3s; animation-duration: 19s;"></div>
+    </div>
+    <div class="hero-glow"></div>
+
+    <!-- Main Section -->
+    <div class="max-w-6xl w-full px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
+        <!-- Branding & Info -->
+        <div class="space-y-8 animate-in slide-in-from-left duration-1000">
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full glass border border-white/10 text-xs font-bold text-blue-400 uppercase tracking-widest">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                </span>
+                <span>The Future of Project Management</span>
+            </div>
+            <h1 class="text-6xl lg:text-8xl font-black tracking-tighter leading-none">
+                Smart <span class="gradient-text">AI PM</span> <br> Tool
+            </h1>
+            <p class="text-xl text-slate-400 leading-relaxed max-w-lg">
+                Automate your backlog, analyze resource risks, and generate UI prototypes in seconds with our intelligence-driven management platform.
+            </p>
+            <div class="flex items-center space-x-12 pt-4">
+                <div class="text-center">
+                    <div class="text-3xl font-bold">10+</div>
+                    <div class="text-xs text-slate-500 uppercase tracking-widest font-black">AI Models</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold">20+</div>
+                    <div class="text-xs text-slate-500 uppercase tracking-widest font-black">Frameworks</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold">100%</div>
+                    <div class="text-xs text-slate-500 uppercase tracking-widest font-black">Efficiency</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Auth Form -->
+        <div class="glass p-10 rounded-[2.5rem] shadow-2xl border border-white/10 w-full max-w-md mx-auto lg:mr-0 animate-in fade-in zoom-in duration-700">
+            <div id="authHeader" class="text-center mb-8">
+                <h3 class="text-3xl font-bold mb-2" id="authTitle">Welcome Back</h3>
+                <p class="text-slate-400" id="authSubtitle">Enter your details to access your dashboard.</p>
+            </div>
+
+            <form id="authForm" class="space-y-5" onsubmit="handleAuth(event)">
+                <div class="space-y-2">
+                    <label class="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">Email Address</label>
+                    <div class="relative">
+                        <i data-lucide="mail" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500"></i>
+                        <input type="email" required placeholder="name@company.com" class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all">
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">Password</label>
+                    <div class="relative">
+                        <i data-lucide="lock" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500"></i>
+                        <input type="password" required placeholder="••••••••" class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all">
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-lg transition-all shadow-xl shadow-blue-500/20 active:scale-95 transform">
+                    Sign In
+                </button>
+            </form>
+
+            <div class="mt-8 pt-8 border-t border-white/5 text-center">
+                <p class="text-slate-500 text-sm">
+                    <span id="toggleText">Don't have an account?</span>
+                    <button onclick="toggleAuth()" id="toggleBtn" class="text-blue-400 font-bold hover:underline ml-1">Create Account</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        let isLogin = true;
+
+        function toggleAuth() {
+            isLogin = !isLogin;
+            const title = document.getElementById('authTitle');
+            const subtitle = document.getElementById('authSubtitle');
+            const toggleText = document.getElementById('toggleText');
+            const toggleBtn = document.getElementById('toggleBtn');
+            const submitBtn = document.querySelector('#authForm button');
+
+            if (isLogin) {
+                title.innerText = "Welcome Back";
+                subtitle.innerText = "Enter your details to access your dashboard.";
+                toggleText.innerText = "Don't have an account?";
+                toggleBtn.innerText = "Create Account";
+                submitBtn.innerText = "Sign In";
+            } else {
+                title.innerText = "Get Started";
+                subtitle.innerText = "Join the future of intelligent management.";
+                toggleText.innerText = "Already have an account?";
+                toggleBtn.innerText = "Sign In";
+                submitBtn.innerText = "Create Account";
+            }
+        }
+
+        function handleAuth(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.innerText = isLogin ? "Signing in..." : "Creating account...";
+            btn.disabled = true;
+
+            // Simulate Auth and Redirect
+            setTimeout(() => {
+                window.location.href = "/dashboard";
+            }, 1200);
+        }
+    </script>
+</body>
+</html>

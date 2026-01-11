@@ -84,10 +84,68 @@
             border-color: rgba(59, 130, 246, 0.5);
             transition: all 0.3s ease;
         }
+
+        /* Floating Bubbles Background */
+        .bubbles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0; /* Changed from -1 to 0 */
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .bubble {
+            position: absolute;
+            bottom: -100px;
+            background: rgba(59, 130, 246, 0.2); /* Increased opacity */
+            border: 1px solid rgba(255, 255, 255, 0.1); /* Added subtle border */
+            border-radius: 50%;
+            animation: float-up 15s infinite linear;
+            backdrop-filter: blur(1px);
+        }
+
+        /* Ensure main content stays above bubbles */
+        aside, main {
+            position: relative;
+            z-index: 10;
+        }
+
+        @keyframes float-up {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.5;
+            }
+            90% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-120vh) scale(1.2);
+                opacity: 0;
+            }
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body class="flex">
+    <!-- Floating Bubbles Background -->
+    <div class="bubbles-container">
+        <div class="bubble" style="left: 10%; width: 40px; height: 40px; animation-delay: 0s; animation-duration: 18s;"></div>
+        <div class="bubble" style="left: 25%; width: 50px; height: 50px; animation-delay: 2s; animation-duration: 15s;"></div>
+        <div class="bubble" style="left: 40%; width: 35px; height: 35px; animation-delay: 4s; animation-duration: 20s;"></div>
+        <div class="bubble" style="left: 55%; width: 60px; height: 60px; animation-delay: 1s; animation-duration: 16s;"></div>
+        <div class="bubble" style="left: 70%; width: 45px; height: 45px; animation-delay: 5s; animation-duration: 14s;"></div>
+        <div class="bubble" style="left: 85%; width: 30px; height: 30px; animation-delay: 3s; animation-duration: 19s;"></div>
+        <div class="bubble" style="left: 15%; width: 55px; height: 55px; animation-delay: 7s; animation-duration: 17s;"></div>
+        <div class="bubble" style="left: 35%; width: 40px; height: 40px; animation-delay: 8s; animation-duration: 21s;"></div>
+        <div class="bubble" style="left: 65%; width: 50px; height: 50px; animation-delay: 6s; animation-duration: 13s;"></div>
+        <div class="bubble" style="left: 90%; width: 35px; height: 35px; animation-delay: 9s; animation-duration: 22s;"></div>
+    </div>
     <!-- Sidebar -->
     <aside class="w-64 h-screen glass m-4 mr-0 flex flex-col hidden md:flex">
         <div class="p-6">

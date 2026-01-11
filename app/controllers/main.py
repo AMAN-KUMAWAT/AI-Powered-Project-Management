@@ -42,6 +42,9 @@ app.include_router(user.router)
 app.include_router(code_gen.router)
 
 @app.get("/", response_class=HTMLResponse)
+async def landing_page(request: Request):
+    return templates.TemplateResponse("landing.html", {"request": request})
+
 @app.get("/dashboard", response_class=HTMLResponse)
 async def dashboard(request: Request, db: Session = Depends(get_db)):
     all_projects = db.query(Project).order_by(Project.created_at.desc()).all()

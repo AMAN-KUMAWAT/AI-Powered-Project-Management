@@ -3,6 +3,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from app.db import get_db
 from app.models.user import UserProfile
+from app.models.employee import Employee
 import shutil
 import os
 
