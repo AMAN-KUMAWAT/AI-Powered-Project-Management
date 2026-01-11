@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}Code Generator: {{ project.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    pre {
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        color: #e2e8f0;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        overflow-x: auto;
+    }
+    .code-container {
+        position: relative;
+    }
+    .copy-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<header class="mb-8">
+    <a href="/projects-list" class="text-blue-400 hover:text-blue-300 flex items-center mb-4 transition-colors">
+        <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
+        Back to Projects
+    </a>
+    <h2 class="text-3xl font-bold">AI Code Generator</h2>
+    <p class="text-slate-400">Generate boilerplate and logic for project epics.</p>
+</header>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Configuration -->
+    <div class="lg:col-span-1 space-y-6">
+        <div class="glass p-6">
+            <h3 class="text-lg font-bold mb-6 flex items-center">
+                <i data-lucide="settings" class="w-5 h-5 mr-3 text-blue-400"></i>
+                Generator Settings
+            </h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Select Epic</label>
+                    <select id="epic-select" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 outline-none focus:border-blue-500">
+                        {% if project.backlog_json and project.backlog_json.epics %}
+                            {% for epic in project.backlog_json.epics %}
+                                <option value="{{ epic.title }}">{{ epic.title }}</option>
+                            {% endfor %}
+                        {% else %}
+                            <option disabled>No Epics available</option>
+                        {% endif %}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Programming Language</label>
+                    <select id="lang-select" class="w-full bg-slate-800 text-white border border-white/10 rounded-lg p-3 outline-none focus:border-blue-500 cursor-pointer">
+                        <option value="Python" class="text-black bg-white">Python</option>
+                        <option value="JavaScript" class="text-black bg-white">JavaScript</option>
+                        <option value="TypeScript" class="text-black bg-white">TypeScript</option>
+                        <option value="Java" class="text-black bg-white">Java</option>
+                        <option value="C#" class="text-black bg-white">C#</option>
+                        <option value="PHP" class="text-black bg-white">PHP</option>
+                        <option value="Go" class="text-black bg-white">Go</option>
+                        <option value="Rust" class="text-black bg-white">Rust</option>
+                        <option value="Ruby" class="text-black bg-white">Ruby</option>
+                        <option value="Swift" class="text-black bg-white">Swift</option>
+                        <option value="Kotlin" class="text-black bg-white">Kotlin</option>
+                        <option value="Dart" class="text-black bg-white">Dart</option>
+                        <option value="C++" class="text-black bg-white">C++</option>
+                        <option value="C" class="text-black bg-white">C</option>
+                        <option value="Scala" class="text-black bg-white">Scala</option>
+                        <option value="Elixir" class="text-black bg-white">Elixir</option>
+                        <option value="Haskell" class="text-black bg-white">Haskell</option>
+                        <option value="Lua" class="text-black bg-white">Lua</option>
+                        <option value="Perl" class="text-black bg-white">Perl</option>
+                        <option value="R" class="text-black bg-white">R</option>
+                    </select>
+                </div>
+                <button onclick="generateCode()" id="genBtn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg flex items-center justify-center shadow-lg shadow-purple-500/20 transition-all">
+                    <i data-lucide="code" class="mr-2 w-5 h-5"></i>
+                    GENERATE CODE
+                </button>
+            </div>
+        </div>
+
+        <div class="glass p-6">
+            <h4 class="font-bold mb-3 text-sm">Instructions</h4>
+            <ul class="text-xs text-slate-400 space-y-2 list-disc pl-4">
+                <li>Select the Epic you want to implement.</li>
+                <li>Choose your target programming language.</li>
+                <li>AI will analyze the Epic details and provide a boilerplate.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Output -->
+    <div class="lg:col-span-2">
+        <div class="glass p-8 min-h-[400px] flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">Generated Implementation</h3>
+                <div id="status-badge" class="hidden px-2 py-1 bg-green-500/20 text-green-400 rounded text-[10px] font-bold">READY</div>
+            </div>
+            
+            <div id="output-placeholder" class="flex-1 flex flex-col items-center justify-center text-slate-500 italic text-center">
+                <i data-lucide="terminal" class="w-12 h-12 mb-4 opacity-20"></i>
+                <p>Select settings and click generate to see AI output.</p>
+            </div>
+
+            <div id="code-output" class="hidden flex-1 code-container">
+                <button onclick="copyCode()" class="copy-btn p-2 hover:bg-white/10 rounded transition-colors" title="Copy Code">
+                    <i data-lucide="copy" class="w-4 h-4"></i>
+                </button>
+                <pre><code id="code-content"></code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function generateCode() {
+        const epic = document.getElementById('epic-select').value;
+        const lang = document.getElementById('lang-select').value;
+        const btn = document.getElementById('genBtn');
+        const placeholder = document.getElementById('output-placeholder');
+        const output = document.getElementById('code-output');
+        const content = document.getElementById('code-content');
+        const badge = document.getElementById('status-badge');
+
+        if (!epic) return;
+
+        btn.disabled = true;
+        btn.innerHTML = '<i data-lucide="loader" class="animate-spin mr-2 w-5 h-5"></i> GENERATING...';
+        lucide.createIcons();
+
+        try {
+            const res = await fetch(`/projects/{{ project.id }}/generate-code`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ epic_title: epic, language: lang })
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                placeholder.classList.add('hidden');
+                output.classList.remove('hidden');
+                badge.classList.remove('hidden');
+                content.textContent = data.code;
+            } else {
+                alert('Generation failed');
+            }
+        } catch (e) {
+            alert('Error generating code');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="code" class="mr-2 w-5 h-5"></i> GENERATE CODE';
+            lucide.createIcons();
+        }
+    }
+
+    function copyCode() {
+        const code = document.getElementById('code-content').textContent;
+        navigator.clipboard.writeText(code);
+        alert('Code copied to clipboard!');
+    }
+</script>
+{% endblock %}

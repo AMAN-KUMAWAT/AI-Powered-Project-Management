@@ -9,7 +9,7 @@ from app.models.project import Project
 from app.models.employee import Employee
 from app.models.performance import PerformanceMetric
 from app.models.user import UserProfile
-from app.controllers import projects, performance, jira, backlog, user
+from app.controllers import projects, performance, jira, backlog, user, code_gen
 import os
 
 # Initialize database
@@ -31,6 +31,7 @@ app.include_router(performance.router)
 app.include_router(jira.router)
 app.include_router(backlog.router)
 app.include_router(user.router)
+app.include_router(code_gen.router)
 
 @app.get("/", response_class=HTMLResponse)
 @app.get("/dashboard", response_class=HTMLResponse)
@@ -60,6 +61,40 @@ async def backlog_editor(project_id: int, request: Request, db: Session = Depend
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
     return templates.TemplateResponse("backlog_editor.html", {"request": request, "project": project, "user": user})
+
+@app.get("/projects/{project_id}/code-gen", response_class=HTMLResponse)
+async def code_generator_view(project_id: int, request: Request, db: Session = Depends(get_db)):
+    project = db.query(Project).filter(Project.id == project_id).first()
+    user = db.query(UserProfile).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return templates.TemplateResponse("code_generator.html", {"request": request, "project": project, "user": user})
+
+@app.get("/projects/{project_id}/items/{item_type}/{epic_idx}", response_class=HTMLResponse)
+@app.get("/projects/{project_id}/items/{item_type}/{epic_idx}/{story_idx}", response_class=HTMLResponse)
+async def backlog_item_detail(project_id: int, item_type: str, epic_idx: int, request: Request, story_idx: int = None, db: Session = Depends(get_db)):
+    project = db.query(Project).filter(Project.id == project_id).first()
+    user = db.query(UserProfile).first()
+    if not project or not project.backlog_json:
+        raise HTTPException(status_code=404, detail="Item not found")
+    
+    try:
+        epic = project.backlog_json['epics'][epic_idx]
+        if item_type == 'epic':
+            item = {"title": epic['title'], "description": f"Main Epic: {epic['title']}", "points": None}
+        else:
+            story = epic['stories'][story_idx]
+            item = {"title": story['title'], "description": f"User Story under {epic['title']}", "points": story['points'], "sprint": story['sprint']}
+    except (IndexError, KeyError):
+        raise HTTPException(status_code=404, detail="Item index out of range")
+
+    return templates.TemplateResponse("backlog_item_view.html", {
+        "request": request, 
+        "project": project, 
+        "item": item, 
+        "item_type": item_type,
+        "user": user
+    })
 
 @app.get("/team", response_class=HTMLResponse)
 async def team_view(request: Request, db: Session = Depends(get_db)):

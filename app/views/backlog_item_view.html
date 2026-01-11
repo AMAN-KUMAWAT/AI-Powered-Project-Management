@@ -1,0 +1,383 @@
+{% extends "base.html" %}
+
+{% block title %}Split View: {{ item.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+    
+    pre {
+        background: #0d1117;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 0 0 0.75rem 0.75rem;
+        padding: 1.5rem;
+        color: #e6edf3;
+        font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        font-size: 0.85rem;
+        line-height: 1.6;
+        overflow-x: auto;
+        height: calc(100% - 40px);
+    }
+    
+    .browser-shell {
+        background: #ffffff;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .browser-header {
+        background: #f1f5f9;
+        padding: 0.75rem 1rem;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .browser-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 6px;
+    }
+
+    .browser-address {
+        background: #ffffff;
+        border-radius: 4px;
+        flex: 1;
+        margin: 0 1rem;
+        padding: 2px 12px;
+        font-size: 11px;
+        color: #64748b;
+        border: 1px solid #e2e8f0;
+        text-align: center;
+    }
+
+    iframe {
+        width: 100%;
+        flex: 1;
+        border: none;
+    }
+
+    .code-header {
+        background: #161b22;
+        padding: 0.5rem 1rem;
+        display: flex;
+        align-items: center;
+        border-radius: 0.75rem 0.75rem 0 0;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-bottom: none;
+    }
+
+    .glass-intense {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    .tab-active {
+        color: #3b82f6;
+        border-bottom: 2px solid #3b82f6;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="h-[calc(100vh-120px)] flex flex-col" id="main-container">
+    <!-- Header -->
+    <header class="mb-6 flex justify-between items-center">
+        <div>
+            <a href="/projects/{{ project.id }}" class="text-blue-400 hover:text-blue-300 flex items-center mb-2 transition-colors">
+                <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
+                Back to Project
+            </a>
+            <h2 class="text-2xl font-bold">{{ item.title }}</h2>
+            <p class="text-slate-400 text-sm capitalize">{{ item_type }} Detail</p>
+        </div>
+        <div class="flex items-center space-x-4">
+            <div id="ui-gen-controls" class="flex items-center bg-white/5 p-1 rounded-xl border border-white/10">
+                <select id="ui-lang-select" class="bg-slate-800 text-xs text-white px-3 py-2 outline-none border-none cursor-pointer rounded-lg">
+                    <option value="Tailwind HTML" class="text-black bg-white">Tailwind HTML</option>
+                    <option value="React (JSX)" class="text-black bg-white">React (JSX)</option>
+                    <option value="Vue (SFC)" class="text-black bg-white">Vue (SFC)</option>
+                    <option value="Angular" class="text-black bg-white">Angular</option>
+                    <option value="Svelte" class="text-black bg-white">Svelte</option>
+                    <option value="Python (Flask)" class="text-black bg-white">Python (Flask)</option>
+                    <option value="Python (Django)" class="text-black bg-white">Python (Django)</option>
+                    <option value="Node.js (Express)" class="text-black bg-white">Node.js (Express)</option>
+                    <option value="PHP (Laravel)" class="text-black bg-white">PHP (Laravel)</option>
+                    <option value="Ruby on Rails" class="text-black bg-white">Ruby on Rails</option>
+                    <option value="ASP.NET Core" class="text-black bg-white">ASP.NET Core</option>
+                    <option value="Go (Fiber)" class="text-black bg-white">Go (Fiber)</option>
+                    <option value="Rust (Actix)" class="text-black bg-white">Rust (Actix)</option>
+                    <option value="Java (Spring)" class="text-black bg-white">Java (Spring)</option>
+                    <option value="Kotlin (Ktor)" class="text-black bg-white">Kotlin (Ktor)</option>
+                    <option value="Swift (Vapor)" class="text-black bg-white">Swift (Vapor)</option>
+                    <option value="Flutter (Web)" class="text-black bg-white">Flutter (Web)</option>
+                    <option value="Dart" class="text-black bg-white">Dart</option>
+                    <option value="TypeScript" class="text-black bg-white">TypeScript</option>
+                    <option value="Bootstrap HTML" class="text-black bg-white">Bootstrap HTML</option>
+                </select>
+                <button onclick="generateUICode()" id="uiGenBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center ml-2">
+                    <i data-lucide="layout" class="w-3 h-3 mr-2"></i>
+                    GENERATE UI COMPONENT
+                </button>
+            </div>
+            <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold uppercase tracking-wider">
+                {{ item.points if item.points else 'Epic' }} {% if item.points %}Points{% endif %}
+            </span>
+        </div>
+    </header>
+
+    <!-- Content Area (Mode: Specifications) -->
+    <div id="spec-view" class="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 overflow-hidden">
+        <!-- Left Side: Details -->
+        <div class="glass p-8 overflow-y-auto custom-scrollbar">
+            <h3 class="text-lg font-bold mb-6 flex items-center">
+                <i data-lucide="info" class="w-5 h-5 mr-3 text-blue-400"></i>
+                Specifications
+            </h3>
+            
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Title</label>
+                    <div class="p-4 bg-white/5 rounded-xl border border-white/5 text-lg font-medium">
+                        {{ item.title }}
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Description</label>
+                    <div class="p-4 bg-white/5 rounded-xl border border-white/5 text-slate-300 leading-relaxed min-h-[150px]">
+                        {{ item.description if item.description else "No detailed description provided. Use AI to generate technical specifications." }}
+                    </div>
+                </div>
+
+                {% if item_type == 'story' %}
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Sprint</label>
+                        <div class="p-3 bg-white/5 rounded-xl border border-white/5 text-center font-bold text-blue-400">
+                            Sprint {{ item.sprint }}
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Story Points</label>
+                        <div class="p-3 bg-white/5 rounded-xl border border-white/5 text-center font-bold text-purple-400">
+                            {{ item.points }} pts
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right Side: AI Insights -->
+        <div class="glass p-8 overflow-y-auto custom-scrollbar flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-bold flex items-center">
+                    <i data-lucide="sparkles" class="w-5 h-5 mr-3 text-purple-400"></i>
+                    AI Technical Insight
+                </h3>
+                <button onclick="generateInsight()" class="text-xs bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded-lg transition-all">
+                    Regenerate
+                </button>
+            </div>
+
+            <div id="insight-content" class="flex-1">
+                <div class="p-6 bg-black/20 rounded-xl border border-white/10 font-mono text-sm text-slate-300 leading-relaxed">
+                    <p class="mb-4 text-purple-400">// AI-Generated Implementation Strategy</p>
+                    <p class="mb-2">1. Initialize the module for <span class="text-white">{{ item.title }}</span>.</p>
+                    <p class="mb-2">2. Define data structures and core interfaces.</p>
+                    <p class="mb-2">3. Implement business logic following SOLID principles.</p>
+                    <p class="mb-4">4. Add unit tests for critical paths.</p>
+                    <div class="h-px bg-white/5 my-4"></div>
+                    <p class="text-slate-500 italic">"This feature requires high concurrency handling. Recommendation: Use asynchronous patterns and caching layers."</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Area (Mode: Playground) -->
+    <div id="playground-view" class="hidden flex-1 grid grid-cols-1 lg:grid-cols-2 gap-8 overflow-hidden">
+        <!-- Left Side: Code Editor -->
+        <div class="flex flex-col h-full overflow-hidden">
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center space-x-4">
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-slate-500 flex items-center">
+                        <i data-lucide="file-code" class="w-4 h-4 mr-2"></i>
+                        Source Code
+                    </h3>
+                    <div class="h-4 w-px bg-white/10"></div>
+                    <span id="playground-lang-badge" class="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded font-mono">HTML</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="copyCode()" class="text-[10px] text-slate-400 hover:text-white flex items-center bg-white/5 px-2 py-1 rounded transition-all">
+                        <i data-lucide="copy" class="w-3 h-3 mr-1"></i> Copy
+                    </button>
+                    <button onclick="exitPlayground()" class="text-[10px] text-red-400/70 hover:text-red-400 font-bold uppercase tracking-widest bg-red-500/5 px-2 py-1 rounded transition-all">Exit</button>
+                </div>
+            </div>
+            
+            <div class="flex-1 flex flex-col overflow-hidden">
+                <div class="code-header">
+                    <div class="flex space-x-1.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-[#ff5f56]"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-[#27c93f]"></div>
+                    </div>
+                    <div class="ml-4 px-3 py-1 bg-[#1d222a] rounded-t-lg text-[10px] text-slate-400 font-mono border-t border-x border-white/5">
+                        index.html
+                    </div>
+                </div>
+                <div class="flex-1 overflow-hidden relative">
+                    <pre class="custom-scrollbar"><code id="playground-code-content"></code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Live Preview -->
+        <div class="flex flex-col h-full overflow-hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-slate-500 flex items-center">
+                    <i data-lucide="eye" class="w-4 h-4 mr-2"></i>
+                    Live Preview
+                </h3>
+                <div class="flex items-center space-x-2">
+                    <span class="text-[10px] text-green-500 flex items-center bg-green-500/10 px-2 py-1 rounded">
+                        <span class="w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5 animate-pulse"></span>
+                        LIVE
+                    </span>
+                </div>
+            </div>
+            
+            <div class="flex-1 browser-shell">
+                <div class="browser-header">
+                    <div class="flex">
+                        <div class="browser-dot bg-[#ff5f56]"></div>
+                        <div class="browser-dot bg-[#ffbd2e]"></div>
+                        <div class="browser-dot bg-[#27c93f]"></div>
+                    </div>
+                    <div class="browser-address">localhost:3000/preview</div>
+                    <button onclick="refreshPreview()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                        <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+                <iframe id="ui-preview-frame"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function generateUICode() {
+        const lang = document.getElementById('ui-lang-select').value;
+        const btn = document.getElementById('uiGenBtn');
+        const specView = document.getElementById('spec-view');
+        const playgroundView = document.getElementById('playground-view');
+        const codeContent = document.getElementById('playground-code-content');
+        const iframe = document.getElementById('ui-preview-frame');
+        const langBadge = document.getElementById('playground-lang-badge');
+
+        btn.disabled = true;
+        btn.innerHTML = '<i data-lucide="loader" class="animate-spin w-3 h-3 mr-2"></i> GENERATING...';
+        lucide.createIcons();
+
+        try {
+            const res = await fetch(`/projects/{{ project.id }}/generate-code`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    epic_title: "{{ item.title }}", 
+                    language: lang,
+                    is_ui: true
+                })
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                
+                // Switch views
+                specView.classList.add('hidden');
+                playgroundView.classList.remove('hidden');
+                playgroundView.classList.add('animate-in', 'fade-in', 'slide-in-from-bottom-4', 'duration-500');
+                
+                // Update Badge
+                langBadge.textContent = lang;
+                
+                // Load code
+                codeContent.textContent = data.code;
+                
+                // Update iframe preview
+                const doc = iframe.contentWindow.document;
+                doc.open();
+                doc.write(data.code);
+                doc.close();
+
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                alert('UI Generation failed');
+            }
+        } catch (e) {
+            console.error(e);
+            alert('Error calling AI');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="layout" class="w-3 h-3 mr-2"></i> GENERATE UI COMPONENT';
+            lucide.createIcons();
+        }
+    }
+
+    function refreshPreview() {
+        const iframe = document.getElementById('ui-preview-frame');
+        const code = document.getElementById('playground-code-content').textContent;
+        const doc = iframe.contentWindow.document;
+        doc.open();
+        doc.write(code);
+        doc.close();
+    }
+
+    function copyCode() {
+        const code = document.getElementById('playground-code-content').textContent;
+        navigator.clipboard.writeText(code);
+        const copyBtn = document.querySelector('button[onclick="copyCode()"]');
+        const originalHtml = copyBtn.innerHTML;
+        copyBtn.innerHTML = '<i data-lucide="check" class="w-3 h-3 mr-1"></i> Copied!';
+        lucide.createIcons();
+        setTimeout(() => {
+            copyBtn.innerHTML = originalHtml;
+            lucide.createIcons();
+        }, 2000);
+    }
+
+    function exitPlayground() {
+        document.getElementById('spec-view').classList.remove('hidden');
+        document.getElementById('playground-view').classList.add('hidden');
+    }
+
+    function generateInsight() {
+        const content = document.getElementById('insight-content');
+        content.innerHTML = '<div class="flex items-center justify-center h-full"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div></div>';
+        
+        setTimeout(() => {
+            content.innerHTML = `
+                <div class="p-6 bg-black/20 rounded-xl border border-white/10 font-mono text-sm text-slate-300 leading-relaxed">
+                    <p class="mb-4 text-green-400">// Revised Strategy for ${document.title.split(': ')[1]}</p>
+                    <p class="mb-2">- Optimized for performance and scalability.</p>
+                    <p class="mb-2">- Integrated security protocols.</p>
+                    <p class="mb-4">- Ready for deployment in Sprint cycle.</p>
+                </div>
+            `;
+        }, 1500);
+    }
+</script>
+{% endblock %}
