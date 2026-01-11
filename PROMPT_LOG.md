@@ -160,6 +160,15 @@ Vibe: Notion x Linear x Superhuman. Git commit ready. Working at localhost:8000 
 - Integrated assignment status (Free/Assigned) across the **Team Overview** and **Performance Matrix**.
 - Implemented "Release Resource" functionality to return employees to the free pool.
 
+## Phase 24: Beta 7 Milestone
+**Status:** Completed ✅
+- Resource Allocation & Management: Implemented task assignment for employees.
+- Assignment Status Sync: Integrated "Free/Assigned" status across Team and Performance views.
+- Dynamic Task Allocation: Enabled managers to select Epics/Stories from project backlogs for resource allocation.
+- Stabilized database schema with automatic synchronization logic.
+- Tagged current state as `beta-7`.
+- **Rollback Command:** `git checkout beta-7`
+
 ## Phase 11: Enhanced Language Selection UI
 **Status:** Completed ✅
 - Improved the styling of programming language dropdowns across the app.
