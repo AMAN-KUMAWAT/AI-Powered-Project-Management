@@ -123,6 +123,27 @@ Vibe: Notion x Linear x Superhuman. Git commit ready. Working at localhost:8000 
 - Enhanced new project modals with professional PDF upload zones.
 - Optimized UI to handle large enterprise-level requirement documents while maintaining a clean aesthetic.
 
+## Phase 20: Backlog Data Visibility Fix
+**Status:** Completed ✅
+- Fixed an issue where only the epic count was visible in the Projects list.
+- Implemented robust calculation logic for total User Stories and Story Points.
+- Synchronized the data display across both the Dashboard cards and the Projects table.
+- Added progress indicators to signify project planning status.
+
+## Phase 19: Beta 5 Milestone
+**Status:** Completed ✅
+- Full PDF content extraction (unlimited page parsing).
+- Description Abstracting: "See More / See Less" interactivity across all project views.
+- Tagged current state as `beta-5`.
+- **Rollback Command:** `git checkout beta-5`
+
+## Phase 21: Story-Driven UI Generation
+**Status:** Completed ✅
+- Refactored the **AI UI Generator** to prioritize User Story descriptions over Epic titles.
+- Updated the **Split View** interactive logic to pass complete requirement context to the generation engine.
+- Enhanced generated UI prototypes (React, Java, Python, HTML) to prominently feature and reflect the specific story details.
+- Improved the visual fidelity of the generated "Requirement Context" section in the UI Playground.
+
 ## Phase 11: Enhanced Language Selection UI
 **Status:** Completed ✅
 - Improved the styling of programming language dropdowns across the app.

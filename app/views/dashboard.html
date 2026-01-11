@@ -65,7 +65,8 @@
             {% endif %}
         </div>
         
-        {% if p.backlog_json %}
+        {% if p.backlog_json and p.backlog_json.epics %}
+        {% set ns = namespace(sc=0) %}
         <div class="mb-4 flex items-center space-x-4 text-[10px] text-slate-500 bg-white/5 p-2 rounded-lg">
             <div class="flex items-center">
                 <i data-lucide="layers" class="w-3 h-3 mr-1 text-blue-400"></i>
@@ -73,9 +74,8 @@
             </div>
             <div class="flex items-center">
                 <i data-lucide="check-square" class="w-3 h-3 mr-1 text-green-400"></i>
-                {% set sc = 0 %}
-                {% for e in p.backlog_json.epics %}{% set sc = sc + e.stories|length %}{% endfor %}
-                {{ sc }} Stories
+                {% for e in p.backlog_json.epics %}{% if e.stories %}{% set ns.sc = ns.sc + e.stories|length %}{% endif %}{% endfor %}
+                {{ ns.sc }} Stories
             </div>
         </div>
         {% endif %}

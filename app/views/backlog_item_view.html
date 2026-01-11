@@ -296,6 +296,7 @@
                 body: JSON.stringify({ 
                     epic_title: "{{ item.title }}", 
                     language: lang,
+                    item_description: `{{ item.description }}`,
                     is_ui: true
                 })
             });
