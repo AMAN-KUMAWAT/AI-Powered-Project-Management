@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block content %}
+<header class="mb-8 flex justify-between items-center">
+    <div>
+        <h2 class="text-3xl font-bold">Resource Notifications</h2>
+        <p class="text-slate-400">Alerts for idle resources and unassigned talent.</p>
+    </div>
+    <div class="px-4 py-2 bg-blue-500/10 rounded-lg border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-widest">
+        {{ idle_employees|length }} Alerts Active
+    </div>
+</header>
+
+<div class="space-y-4">
+    {% if idle_employees %}
+        {% for emp in idle_employees %}
+        <div class="glass p-6 flex justify-between items-center group hover:bg-white/5 transition-all">
+            <div class="flex items-center space-x-6">
+                <div class="w-12 h-12 rounded-full bg-yellow-500/20 flex items-center justify-center text-yellow-500 border border-yellow-500/20 group-hover:scale-110 transition-transform">
+                    <i data-lucide="alert-triangle"></i>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold text-white group-hover:text-blue-400 transition-colors">{{ emp.name }}</h4>
+                    <p class="text-slate-400 text-sm">
+                        Resource has been <span class="text-yellow-400 font-bold">Free</span> since {{ emp.free_since.strftime('%Y-%m-%d %H:%M') }}
+                    </p>
+                    <p class="text-[10px] text-slate-500 uppercase font-black mt-1 tracking-widest">High Priority Allocation Needed</p>
+                </div>
+            </div>
+            <a href="/team/{{ emp.id }}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-blue-500/20 flex items-center">
+                Allocate Now
+                <i data-lucide="chevron-right" class="ml-2 w-4 h-4"></i>
+            </a>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="glass p-12 text-center text-slate-500 border-2 border-dashed border-white/10">
+            <i data-lucide="check-circle" class="mx-auto w-16 h-16 mb-4 opacity-20 text-green-500"></i>
+            <h3 class="text-xl font-bold text-slate-300">All Resources Optimized</h3>
+            <p>No idle resources detected for more than 24 hours.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

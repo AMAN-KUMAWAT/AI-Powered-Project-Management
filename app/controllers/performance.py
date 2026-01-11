@@ -9,14 +9,25 @@ from app.models.user import UserProfile
 router = APIRouter()
 templates = Jinja2Templates(directory="app/views")
 
+from datetime import datetime, timedelta
+
 @router.get("/performance")
 async def performance_matrix(request: Request, db: Session = Depends(get_db)):
     employees = db.query(Employee).all()
     metrics = {m.employee_id: m for m in db.query(PerformanceMetric).all()}
     user = db.query(UserProfile).first()
+    
+    # Notifications logic
+    one_day_ago = datetime.utcnow() - timedelta(days=1)
+    notifications = db.query(Employee).filter(
+        Employee.is_assigned == 0,
+        Employee.free_since <= one_day_ago
+    ).all()
+
     return templates.TemplateResponse("performance.html", {
         "request": request, 
         "employees": employees,
         "metrics": metrics,
-        "user": user
+        "user": user,
+        "notifications": notifications
     })

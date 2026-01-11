@@ -102,6 +102,21 @@
                 <i data-lucide="folder-kanban" class="mr-3 w-5 h-5"></i>
                 Projects
             </a>
+            <a href="/notifications" class="sidebar-item {% if request.url.path == '/notifications' %}active{% endif %} flex items-center justify-between p-3 rounded-lg text-slate-400 hover:text-white transition-all group">
+                <div class="flex items-center">
+                    <i data-lucide="bell" class="mr-3 w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                    Notifications
+                </div>
+                {% if notifications and notifications|length > 0 %}
+                <span class="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full animate-bounce">
+                    {{ notifications|length }}
+                </span>
+                {% endif %}
+            </a>
+            <a href="/resource-planning" class="sidebar-item {% if request.url.path == '/resource-planning' %}active{% endif %} flex items-center p-3 rounded-lg text-slate-400 hover:text-white group">
+                <i data-lucide="user-plus" class="mr-3 w-5 h-5 group-hover:scale-110 transition-transform text-blue-400"></i>
+                Resource Planning
+            </a>
             <a href="/team" class="sidebar-item {% if request.url.path == '/team' %}active{% endif %} flex items-center p-3 rounded-lg text-slate-400 hover:text-white">
                 <i data-lucide="users" class="mr-3 w-5 h-5"></i>
                 Team

@@ -7,6 +7,7 @@ from app.models.performance import PerformanceMetric
 from app.models.backlog import BacklogItem
 from app.models.user import UserProfile
 import os
+from datetime import datetime, timedelta
 
 DATABASE_URL = "sqlite:///./data/smart_pm.db"
 os.makedirs("./data", exist_ok=True)
@@ -35,16 +36,57 @@ def seed_sample_data():
     db.add_all([p1, p2, p3])
     db.commit()
 
-    # Seed Employees
+    # Seed Employees with Skills and Notice Periods
+    now = datetime.utcnow()
+    two_days_ago = now - timedelta(days=2)
+    thirty_days_from_now = now + timedelta(days=30)
+    fifteen_days_from_now = now + timedelta(days=15)
+    
     employees = [
-        Employee(name="John Doe", role="Dev", performance_score=9.2),
-        Employee(name="Sarah Connor", role="QA", performance_score=8.7),
-        Employee(name="Mike Ross", role="PM", performance_score=9.5),
-        Employee(name="Harvey Specter", role="Senior Dev", performance_score=9.8),
-        Employee(name="Donna Paulsen", role="QA Lead", performance_score=9.4),
-        Employee(name="Louis Litt", role="Dev", performance_score=7.8),
-        Employee(name="Rachel Zane", role="Designer", performance_score=8.9),
-        Employee(name="Jessica Pearson", role="Director", performance_score=9.9),
+        # Notice Period Employees (Unique Names)
+        Employee(
+            name="Robert Stark", role="Dev", performance_score=9.2, free_since=two_days_ago,
+            is_on_notice=True, notice_start_date=now - timedelta(days=15), notice_end_date=fifteen_days_from_now,
+            skills="React, Python, SQL, AWS"
+        ),
+        Employee(
+            name="Sarah Connor", role="QA", performance_score=8.7, free_since=two_days_ago,
+            is_on_notice=False, skills="Selenium, Python, Jira, Automation"
+        ),
+        Employee(
+            name="Arthur Morgan", role="PM", performance_score=9.5, free_since=two_days_ago,
+            is_on_notice=True, notice_start_date=now - timedelta(days=5), notice_end_date=now + timedelta(days=25),
+            skills="Agile, Jira, Strategy, Stakeholder Management"
+        ),
+        # Replacements & Others
+        Employee(
+            name="Harvey Specter", role="Senior Dev", performance_score=9.8, free_since=two_days_ago,
+            skills="React, Python, AWS, Docker, Kubernetes"
+        ),
+        Employee(
+            name="Donna Paulsen", role="QA Lead", performance_score=9.4, free_since=two_days_ago,
+            skills="Selenium, QA Strategy, Leadership, Python"
+        ),
+        Employee(
+            name="Louis Litt", role="Dev", performance_score=7.8, free_since=two_days_ago,
+            skills="React, JavaScript, SQL"
+        ),
+        Employee(
+            name="Rachel Zane", role="Designer", performance_score=8.9, free_since=two_days_ago,
+            skills="Figma, UI/UX, Adobe XD"
+        ),
+        Employee(
+            name="Jessica Pearson", role="Director", performance_score=9.9, free_since=two_days_ago,
+            skills="Leadership, Strategy, Operations"
+        ),
+        Employee(
+            name="Katrina Bennett", role="Dev", performance_score=8.5, free_since=two_days_ago,
+            skills="Python, Django, PostgreSQL"
+        ),
+        Employee(
+            name="Alex Williams", role="PM", performance_score=9.1, free_since=two_days_ago,
+            skills="Agile, Scum, Strategy"
+        ),
     ]
     db.add_all(employees)
     db.commit()
@@ -55,7 +97,7 @@ def seed_sample_data():
             employee_id=emp.id,
             velocity=12.5 if "Dev" in emp.role else 0,
             completion_rate=95.0 if emp.performance_score > 9.0 else 85.0,
-            skills="Python, React, AWS" if "Dev" in emp.role else "Agile, Jira, Strategy",
+            skills=emp.skills,
             promotion_ready="Yes" if emp.performance_score >= 9.5 else "No"
         )
         db.add(metric)

@@ -169,6 +169,23 @@ Vibe: Notion x Linear x Superhuman. Git commit ready. Working at localhost:8000 
 - Tagged current state as `beta-7`.
 - **Rollback Command:** `git checkout beta-7`
 
+## Phase 25: Resource Notifications & Alerts
+**Status:** Completed ✅
+- Enhanced **Employee Model** to track idle time with `free_since`.
+- Implemented **Notification Logic**: Automatically detects resources free for more than 24 hours.
+- Created **Notifications View**: A dedicated tab to view high-priority allocation alerts.
+- Integrated **Sidebar Alerts**: Added a "Notifications" tab with a live, bouncing badge showing the count of idle resources.
+- Direct Redirection: Each alert includes an "Allocate Now" button that redirects straight to the employee's allocation profile.
+- Sample Data: Updated seeding to demonstrate real-world idle resource scenarios.
+
+## Phase 26: Resource Planning & Replacement Analysis
+**Status:** Completed ✅
+- **Notice Period Tracking:** Implemented logic to track employees on notice, including countdowns for days left.
+- **Skill-Based Replacement Analysis:** Created a matching engine that suggests existing employees as replacements based on role and overlapping skill sets.
+- **AI Strategic Insights:** Added a "Decision Support" section that suggests either internal reallocation (with knowledge transfer) or immediate hiring based on resource availability.
+- **New Tab: Resource Planning:** Added a dedicated sidebar tab for centralized resource risk management.
+- **Enhanced Sample Data:** Seeded 10+ employees with detailed skills (React, Python, Selenium, etc.) and various notice period statuses.
+
 ## Phase 11: Enhanced Language Selection UI
 **Status:** Completed ✅
 - Improved the styling of programming language dropdowns across the app.

@@ -9,10 +9,24 @@ import os
 router = APIRouter()
 templates = Jinja2Templates(directory="app/views")
 
+from datetime import datetime, timedelta
+
 @router.get("/profile")
 async def get_profile(request: Request, db: Session = Depends(get_db)):
     user = db.query(UserProfile).first()
-    return templates.TemplateResponse("profile.html", {"request": request, "user": user})
+    
+    # Notifications logic
+    one_day_ago = datetime.utcnow() - timedelta(days=1)
+    notifications = db.query(Employee).filter(
+        Employee.is_assigned == 0,
+        Employee.free_since <= one_day_ago
+    ).all()
+
+    return templates.TemplateResponse("profile.html", {
+        "request": request, 
+        "user": user,
+        "notifications": notifications
+    })
 
 @router.post("/profile/update")
 async def update_profile(
