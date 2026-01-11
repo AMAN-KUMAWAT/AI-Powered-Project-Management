@@ -178,6 +178,16 @@ Vibe: Notion x Linear x Superhuman. Git commit ready. Working at localhost:8000 
 - Direct Redirection: Each alert includes an "Allocate Now" button that redirects straight to the employee's allocation profile.
 - Sample Data: Updated seeding to demonstrate real-world idle resource scenarios.
 
+## Phase 27: Beta 8 Milestone
+**Status:** Completed ✅
+- **Resource Notifications:** Implemented a real-time alerting system for idle resources (free > 24h).
+- **Resource Planning:** Added a strategic dashboard for tracking notice periods and replacement risks.
+- **Skill-Matching Engine:** Automated analysis to find internal replacements for employees on notice.
+- **Decision Support:** Integrated AI insights for "Internal Transfer" vs. "New Hire" decisions.
+- **Enhanced Data Seeding:** Populated the system with unique employees (Robert Stark, Arthur Morgan) to distinguish notice period risks.
+- Tagged current state as `beta-8`.
+- **Rollback Command:** `git checkout beta-8`
+
 ## Phase 26: Resource Planning & Replacement Analysis
 **Status:** Completed ✅
 - **Notice Period Tracking:** Implemented logic to track employees on notice, including countdowns for days left.
