@@ -23,12 +23,12 @@
         <tbody class="divide-y divide-white/5">
             {% for emp in employees %}
             {% set m = metrics.get(emp.id) %}
-            <tr class="hover:bg-white/5 transition-colors">
+            <tr onclick="window.location.href='/team/{{ emp.id }}'" class="hover:bg-white/5 transition-colors cursor-pointer group">
                 <td class="p-4 flex items-center space-x-3">
-                    <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-xs font-bold">
+                    <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-xs font-bold group-hover:scale-110 transition-transform">
                         {{ emp.name[:2].upper() }}
                     </div>
-                    <span>{{ emp.name }}</span>
+                    <span class="group-hover:text-blue-400 transition-colors">{{ emp.name }}</span>
                 </td>
                 <td class="p-4 text-slate-400">{{ emp.role }}</td>
                 <td class="p-4">
@@ -45,7 +45,9 @@
                     {% endif %}
                 </td>
                 <td class="p-4">
-                    <button class="text-blue-400 hover:underline text-sm">View Details</button>
+                    <button class="text-blue-400 hover:text-blue-300 text-sm flex items-center">
+                        View Details <i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i>
+                    </button>
                 </td>
             </tr>
             {% endfor %}

@@ -31,6 +31,17 @@
             </h3>
             <div id="backlog-preview" class="space-y-4">
                 {% if project.backlog_json %}
+                    <div class="flex items-center space-x-4 mb-4 p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                        <div class="text-xs">
+                            <span class="text-slate-400">Epics:</span> 
+                            <span class="text-blue-400 font-bold">{{ project.backlog_json.epics|length }}</span>
+                        </div>
+                        <div class="text-xs">
+                            <span class="text-slate-400">Total Stories:</span> 
+                            {% set sc = 0 %}{% for e in project.backlog_json.epics %}{% set sc = sc + e.stories|length %}{% endfor %}
+                            <span class="text-green-400 font-bold">{{ sc }}</span>
+                        </div>
+                    </div>
                     {% for epic in project.backlog_json.epics %}
                     <div class="p-4 bg-white/5 rounded-lg border border-white/10">
                         <h4 class="font-bold text-blue-400 mb-2">{{ epic.title }}</h4>

@@ -7,6 +7,7 @@ from app.db import get_db, engine, seed_sample_data
 from app.models.base import Base
 from app.models.project import Project
 from app.models.employee import Employee
+from app.models.performance import PerformanceMetric
 from app.models.user import UserProfile
 from app.controllers import projects, performance, jira, backlog, user
 import os
@@ -65,6 +66,20 @@ async def team_view(request: Request, db: Session = Depends(get_db)):
     employees = db.query(Employee).all()
     user = db.query(UserProfile).first()
     return templates.TemplateResponse("team.html", {"request": request, "employees": employees, "user": user})
+
+@app.get("/team/{employee_id}", response_class=HTMLResponse)
+async def employee_detail(employee_id: int, request: Request, db: Session = Depends(get_db)):
+    employee = db.query(Employee).filter(Employee.id == employee_id).first()
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    metric = db.query(PerformanceMetric).filter(PerformanceMetric.employee_id == employee_id).first()
+    user = db.query(UserProfile).first()
+    return templates.TemplateResponse("employee_detail.html", {
+        "request": request, 
+        "employee": employee, 
+        "metric": metric,
+        "user": user
+    })
 
 @app.get("/projects-list", response_class=HTMLResponse)
 async def projects_list(request: Request, db: Session = Depends(get_db)):

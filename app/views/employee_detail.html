@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Employee Profile: {{ employee.name }}{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <a href="/team" class="text-blue-400 hover:text-blue-300 flex items-center mb-4 transition-colors">
+        <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
+        Back to Team
+    </a>
+    <div class="flex items-center space-x-6">
+        <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-3xl font-bold border-4 border-white/10 shadow-xl">
+            {{ employee.name[:2].upper() }}
+        </div>
+        <div>
+            <h2 class="text-3xl font-bold">{{ employee.name }}</h2>
+            <p class="text-slate-400 text-lg">{{ employee.role }}</p>
+            <div class="mt-2 flex space-x-2">
+                <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold uppercase tracking-wider">
+                    Score: {{ employee.performance_score }}
+                </span>
+                {% if metric and metric.promotion_ready == 'Yes' %}
+                <span class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-bold uppercase tracking-wider">
+                    Promotion Ready
+                </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Performance Stats -->
+    <div class="lg:col-span-2 space-y-6">
+        <div class="glass p-8">
+            <h3 class="text-xl font-bold mb-6 flex items-center">
+                <i data-lucide="bar-chart-big" class="w-5 h-5 mr-3 text-blue-400"></i>
+                Performance Analytics
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center p-4 bg-white/5 rounded-xl border border-white/5">
+                        <span class="text-slate-400">Velocity</span>
+                        <span class="text-xl font-bold text-blue-400">{% if metric %}{{ metric.velocity }}{% else %}0.0{% endif %} pts/sp</span>
+                    </div>
+                    <div class="flex justify-between items-center p-4 bg-white/5 rounded-xl border border-white/5">
+                        <span class="text-slate-400">Completion Rate</span>
+                        <span class="text-xl font-bold text-green-400">{% if metric %}{{ metric.completion_rate }}{% else %}0.0{% endif %}%</span>
+                    </div>
+                </div>
+                <div class="p-6 bg-white/5 rounded-xl border border-white/5">
+                    <h4 class="text-sm font-semibold text-slate-400 mb-4 uppercase">Skills Matrix</h4>
+                    <div class="flex flex-wrap gap-2">
+                        {% if metric and metric.skills %}
+                            {% for skill in metric.skills.split(',') %}
+                            <span class="px-3 py-1 bg-white/10 rounded-lg text-sm">{{ skill.strip() }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="text-slate-500 italic text-sm">No skills listed</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass p-8">
+            <h3 class="text-xl font-bold mb-6 flex items-center">
+                <i data-lucide="activity" class="w-5 h-5 mr-3 text-purple-400"></i>
+                Recent Activity
+            </h3>
+            <div class="space-y-4">
+                <div class="p-4 bg-white/5 rounded-xl border-l-4 border-blue-500">
+                    <p class="text-sm font-medium">Completed Epic: Core Infrastructure Migration</p>
+                    <p class="text-xs text-slate-500 mt-1">2 days ago • SaaS HR Platform</p>
+                </div>
+                <div class="p-4 bg-white/5 rounded-xl border-l-4 border-purple-500">
+                    <p class="text-sm font-medium">Updated 15 Stories in Backlog</p>
+                    <p class="text-xs text-slate-500 mt-1">4 days ago • AI Customer Chatbot</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Info -->
+    <div class="space-y-6">
+        <div class="glass p-6">
+            <h3 class="text-lg font-bold mb-4">Contact Information</h3>
+            <div class="space-y-4 text-sm">
+                <div class="flex items-center text-slate-400">
+                    <i data-lucide="mail" class="w-4 h-4 mr-3"></i>
+                    {{ employee.name.lower().replace(' ', '.') }}@smartpm.ai
+                </div>
+                <div class="flex items-center text-slate-400">
+                    <i data-lucide="slack" class="w-4 h-4 mr-3"></i>
+                    @{{ employee.name.lower().split(' ')[0] }}
+                </div>
+            </div>
+        </div>
+        
+        <div class="glass p-6">
+            <h3 class="text-lg font-bold mb-4 text-yellow-400">Career Progress</h3>
+            <div class="space-y-4">
+                <div class="w-full bg-white/5 rounded-full h-2">
+                    <div class="bg-yellow-500 h-2 rounded-full" style="width: {{ (employee.performance_score * 10)|int }}%"></div>
+                </div>
+                <p class="text-xs text-slate-500">Current performance is at {{ (employee.performance_score * 10)|int }}% of yearly target. High potential for lead roles.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

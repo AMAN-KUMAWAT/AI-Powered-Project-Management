@@ -38,3 +38,23 @@ Vibe: Notion x Linear x Superhuman. Git commit ready. Working at localhost:8000 
 - Robust Save Plan implementation with project status updates.
 - Added a dedicated Projects tab with a detailed tabular view.
 - Updated sidebar navigation for better accessibility.
+
+## Phase 5: Backlog UI Sync
+**Status:** Completed ✅
+- Enhanced Projects List to show detailed plan metrics (Epics, Stories, Story Points).
+- Added plan summary badges to Dashboard project cards.
+- Ensured "Save Plan" action triggers immediate UI reflection across the app.
+
+## Phase 6: Team Deep Dive
+**Status:** Completed ✅
+- Implemented clickable Employee Profiles from the Team Overview.
+- Created `employee_detail.html` with complete performance analytics and skills matrix.
+- Integrated clickable rows in the Performance Matrix for easier navigation.
+- Added "Back to Team" navigation with preserved context.
+
+## Phase 4: Beta 1 Milestone
+**Status:** Completed ✅
+- Initialized Git repository.
+- Tagged current state as `beta-1`.
+- This version includes: Full MVC structure, AI Backlog Generator, Performance Matrix, User Profiles, Theme Switching, and Project Management.
+- **Rollback Command:** `git checkout beta-1`
