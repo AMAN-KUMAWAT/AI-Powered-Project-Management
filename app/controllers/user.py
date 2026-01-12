@@ -8,7 +8,7 @@ import shutil
 import os
 
 router = APIRouter()
-templates = Jinja2Templates(directory="app/views")
+from app.views import templates
 
 from datetime import datetime, timedelta
 

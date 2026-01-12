@@ -213,6 +213,7 @@ Vibe: Notion x Linear x Superhuman. Git commit ready. Working at localhost:8000 
 - **Strict Email Validation:** Implemented a verification engine on the landing page that blocks common sample/fake emails (e.g., abc@gmail.com, test@example.com), ensuring only original user emails are allowed for sign-in/up.
 - **Seeded Data Alignment:** Updated the default system user's email to `aman.pm@smartai.io` to comply with the new strict validation rules.
 - **Realistic Story Naming:** Implemented a context-aware story generation engine that replaces generic placeholders with engineering-grade titles like "Integrate OAuth2" or "Optimize database indexing".
+- **Predictive Delivery Dates:** Added an intelligent delivery date calculation engine to the Projects tab, Dashboard, and Project Details. It estimates the final completion date based on the number of active sprints and epics, providing a predictable roadmap for stakeholders.
 
 ## Phase 30: Beta 9 Milestone
 **Status:** Completed ✅

@@ -7,6 +7,8 @@ from pydantic import BaseModel
 import json
 import random
 
+from app.views import templates
+
 router = APIRouter()
 
 class BacklogUpdate(BaseModel):

@@ -24,8 +24,7 @@ app = FastAPI(title="Smart AI PM Tool")
 os.makedirs("static/uploads", exist_ok=True)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Templates setup
-templates = Jinja2Templates(directory="app/views")
+from app.views import templates
 
 def get_notifications(db: Session):
     one_day_ago = datetime.utcnow() - timedelta(days=1)

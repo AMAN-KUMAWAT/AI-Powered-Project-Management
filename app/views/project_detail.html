@@ -109,6 +109,14 @@
                     <span class="text-slate-400">Created</span>
                     <span class="text-slate-300">{{ project.created_at.strftime('%Y-%m-%d') }}</span>
                 </div>
+                {% if project.backlog_json and project.backlog_json.epics %}
+                    {% set max_s = 1 %}
+                    {% for epic in project.backlog_json.epics %}{% if epic.stories %}{% for story in epic.stories %}{% if story.sprint and story.sprint > max_s %}{% set max_s = story.sprint %}{% endif %}{% endfor %}{% endif %}{% endfor %}
+                    <div class="flex justify-between border-t border-white/5 pt-4 mt-2">
+                        <span class="text-blue-400 font-bold uppercase text-[10px] tracking-widest">Est. Delivery</span>
+                        <span class="text-blue-400 font-black">{{ (project.created_at + timedelta(days=max_s * 14)).strftime('%Y-%m-%d') }}</span>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
