@@ -9,7 +9,8 @@ Modern, AI-powered project management tool with a strict MVC architecture for sc
 
 ## ⚡ Quick Start (Windows)
 1. Double-click `start.bat`
-2. Open [http://localhost:8000](http://localhost:8000) in your browser.
+2. Access Site from here:- https://ai-powered-project-management-2.onrender.com/profile
+3. Open [http://localhost:8000](http://localhost:8000) in your browser.
 
 ## ⚡ Quick Start (Manual)
 ```bash
